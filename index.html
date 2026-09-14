@@ -127,13 +127,11 @@ body.has-bg-image[data-theme="dark"] .toolbar { background: rgba(20,20,24,.6); }
   color: var(--text); letter-spacing: .02em;
   overflow-y: auto; -webkit-overflow-scrolling: touch;
   text-indent: var(--writer-indent);
-  transition: opacity .15s;
 }
 .editor::placeholder { color: var(--text-3); font-size: .88em; line-height: 1.8; text-indent: 0; letter-spacing: 0; }
 .editor::-webkit-scrollbar { width: 4px; }
 .editor::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 .editor::-webkit-scrollbar-track { background: transparent; }
-.editor.locked { opacity: .65; }
 
 .counter {
   position: absolute; right: 14px; bottom: 12px;
@@ -574,6 +572,13 @@ input[type="range"].slider::-moz-range-thumb {
     </div>
 
     <div class="group">
+      <div class="group-label"><span>背景图片透明度</span><span class="val" id="valVeil">30%</span></div>
+      <div class="slider-row">
+        <input class="slider" type="range" id="rangeVeil" min="0" max="90" step="5" value="30">
+      </div>
+    </div>
+
+    <div class="group">
       <div class="group-label"><span>文字颜色</span><span class="val" id="valFg">墨黑</span></div>
       <div class="swatches" id="fgSwatches"></div>
     </div>
@@ -771,7 +776,7 @@ input[type="range"].slider::-moz-range-thumb {
 
   var DEFAULT_TYPO = {
     font: 'lxgw', size: 19, lh: 1.95, indent: false,
-    bg: '#FCFAF6', fg: '#222222', bgImage: ''
+    bg: '#FCFAF6', fg: '#222222', bgImage: '', bgVeil: 30
   };
   var MIN_SIZE = 14, MAX_SIZE = 40;
   var TYPO_KEY = 'writer.typo.v3';
@@ -790,6 +795,7 @@ input[type="range"].slider::-moz-range-thumb {
   var rangeLh = $('rangeLh'), valLh = $('valLh'), swIndent = $('swIndent');
   var bgSwatches = $('bgSwatches'), fgSwatches = $('fgSwatches');
   var valBg = $('valBg'), valFg = $('valFg');
+  var valVeil = $('valVeil'), rangeVeil = $('rangeVeil');
 
   var commentList = $('commentList'), composerSlot = $('composerSlot');
   var commentCount = $('commentCount'), commentBadge = $('commentBadge');
@@ -801,6 +807,8 @@ input[type="range"].slider::-moz-range-thumb {
   var fileInput = $('fileInput'), bgImageInput = $('bgImageInput');
   var activeSheet = null;
 
+  var skipFocusToEnd = false;
+  var lastSyncedText = '';
   var typo = Object.assign({}, DEFAULT_TYPO);
 
   function getFont(id) {
@@ -844,6 +852,8 @@ input[type="range"].slider::-moz-range-thumb {
       if (/^#[0-9a-f]{6}$/i.test(o.bg)) typo.bg = o.bg;
       if (/^#[0-9a-f]{6}$/i.test(o.fg)) typo.fg = o.fg;
       if (typeof o.bgImage === 'string') typo.bgImage = o.bgImage;
+      var v = parseInt(o.bgVeil, 10);
+      if (!isNaN(v)) typo.bgVeil = Math.min(90, Math.max(0, v));
     } catch (e) {}
   }
   function saveTypo() {
@@ -886,7 +896,13 @@ input[type="range"].slider::-moz-range-thumb {
     themeColor.setAttribute('content', bg);
 
     if (typo.bgImage) {
-      document.body.style.backgroundImage = 'url(' + typo.bgImage + ')';
+      var veil = (typo.bgVeil || 0) / 100;
+      var rgb = hex2rgb(bg) || [252, 250, 246];
+      var rgba = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + veil + ')';
+      document.body.style.backgroundImage =
+        'linear-gradient(' + rgba + ',' + rgba + '), url(' + typo.bgImage + ')';
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center';
       document.body.classList.add('has-bg-image');
     } else {
       document.body.style.backgroundImage = '';
@@ -897,6 +913,8 @@ input[type="range"].slider::-moz-range-thumb {
     valLh.textContent = typo.lh.toFixed(2);
     rangeSize.value = typo.size;
     rangeLh.value = typo.lh;
+    if (valVeil) valVeil.textContent = (typo.bgVeil || 0) + '%';
+    if (rangeVeil) rangeVeil.value = typo.bgVeil || 0;
 
     swIndent.classList.toggle('on', typo.indent);
     swIndent.setAttribute('aria-checked', typo.indent ? 'true' : 'false');
@@ -1041,10 +1059,6 @@ input[type="range"].slider::-moz-range-thumb {
     return out;
   }
 
-  var skipFocusToEnd = false;
-
-  var lastSyncedText = '';
-
   var state = {
     title: '', comments: [], room: '', online: false,
     selfId: '', selfName: '', selfColor: '', peers: [],
@@ -1064,7 +1078,8 @@ input[type="range"].slider::-moz-range-thumb {
   }
   function scheduleLocalSave() { clearTimeout(saveTimer); saveTimer = setTimeout(persistLocal, 600); }
 
-  var collab = { ws: null, bc: null, local: false, ready: false, suppress: false, pushTimer: null, reconnectTimer: null, retry: 0, typingTimer: null };
+  var collab = { ws: null, bc: null, local: false, ready: false, suppress: false,
+                 pushTimer: null, reconnectTimer: null, retry: 0, typingTimer: null };
   var COLORS = ['#4A8B6F','#C2873F','#5B7FBF','#B3618A','#8A7BC8','#4F9BA8','#C2604F','#7E9B4A'];
 
   function pickColor(id) {
@@ -1084,8 +1099,14 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   function sendToRoom(payload) {
-    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); return true; }
-    if (collab.ws && collab.ws.readyState === 1) { collab.ws.send(JSON.stringify(payload)); return true; }
+    if (collab.local) {
+      if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload));
+      return true;
+    }
+    if (collab.ws && collab.ws.readyState === 1) {
+      collab.ws.send(JSON.stringify(payload));
+      return true;
+    }
     return false;
   }
 
@@ -1101,10 +1122,12 @@ input[type="range"].slider::-moz-range-thumb {
       sendToRoom({ type: 'op', patch: patchText });
     } catch (e) {}
   }
+
   function pushTitle() {
     if (!collab.ready) return;
     sendToRoom({ type: 'title', title: titleInput.value });
   }
+
   function schedulePush() {
     if (!collab.ready) return;
     clearTimeout(collab.pushTimer);
@@ -1122,7 +1145,7 @@ input[type="range"].slider::-moz-range-thumb {
       state.selfTyping = false;
       sendToRoom({ type: 'typing', active: false });
       pushContent();
-    }, 900);
+    }, 1200);
   }
 
   function applyRemotePatch(patchText) {
@@ -1139,18 +1162,16 @@ input[type="range"].slider::-moz-range-thumb {
         var p = patches[i];
         var ps = p.start1, pe = p.start1 + p.length1;
         var d = p.length2 - p.length1;
-
         if (pos >= pe) offset += d;
         else if (pos > ps) offset += (p.start1 + p.length2 - pos);
-
         if (posEnd >= pe) offsetEnd += d;
         else if (posEnd > ps) offsetEnd += (p.start1 + p.length2 - posEnd);
       }
 
       var result = dmp.patch_apply(patches, oldText);
       var newText = result[0];
-
       var focused = document.activeElement === editor;
+
       editor.value = newText;
       lastSyncedText = newText;
 
@@ -1165,19 +1186,16 @@ input[type="range"].slider::-moz-range-thumb {
     } catch (e) {}
   }
 
-    var shouldLock = others.length > 0 && !state.selfTyping;
-    if (shouldLock) {
-      if (!editor.readOnly) {
-        editor.readOnly = true;
-        editor.classList.add('locked');
-      }
-      typingBanner.textContent = '✎ ' + (others[0].name || '对方') + ' 正在输入…';
+  function updateTypingBanner() {
+    var othersTyping = false, name = '';
+    for (var i = 0; i < state.peers.length; i++) {
+      var p = state.peers[i];
+      if (p.id !== state.selfId && p.typing) { othersTyping = true; name = p.name || ''; break; }
+    }
+    if (othersTyping) {
+      typingBanner.textContent = '✎ ' + (name || '对方') + ' 正在输入…';
       typingBanner.classList.add('show');
     } else {
-      if (editor.readOnly) {
-        editor.readOnly = false;
-        editor.classList.remove('locked');
-      }
       typingBanner.classList.remove('show');
     }
   }
@@ -1208,9 +1226,12 @@ input[type="range"].slider::-moz-range-thumb {
         lastSyncedText = '';
         setTimeout(pushContent, 80);
         setTimeout(pushTitle, 150);
+      } else {
+        lastSyncedText = '';
       }
 
-      if (Array.isArray(msg.peers)) { state.peers = msg.peers;renderPeers();
+      if (Array.isArray(msg.peers)) { state.peers = msg.peers; renderPeers(); updateTypingBanner(); }
+      updateSharePanel();
       return;
     }
 
@@ -1222,34 +1243,36 @@ input[type="range"].slider::-moz-range-thumb {
 
     if (msg.type === 'resync') {
       var resyncText = String(msg.content || '');
-      if (resyncText !== editor.value) {
-        editor.value = resyncText;
-        lastSyncedText = resyncText;
-        countText();
-      }
+      editor.value = resyncText;
+      lastSyncedText = resyncText;
+      countText();
       return;
     }
+
     if (msg.type === 'title') {
       if (msg.from === state.selfId || collab.suppress) return;
       var t = String(msg.title || '');
       if (t !== titleInput.value && document.activeElement !== titleInput) titleInput.value = t;
       return;
     }
+
     if (msg.type === 'typing') {
       if (collab.local) {
         for (var k = 0; k < state.peers.length; k++) {
           if (state.peers[k].id === msg.from) state.peers[k].typing = !!msg.active;
         }
         renderPeers();
-        updateTypingLock();
+        updateTypingBanner();
       }
       return;
     }
+
     if (msg.type === 'peers') {
       state.peers = Array.isArray(msg.peers) ? msg.peers : [];
-      renderPeers(); updateSharePanel();
+      renderPeers(); updateTypingBanner(); updateSharePanel();
       return;
     }
+
     if (msg.type === 'comment:add' && msg.comment) {
       var exist = false;
       for (var i = 0; i < state.comments.length; i++)
@@ -1277,6 +1300,7 @@ input[type="range"].slider::-moz-range-thumb {
     collab.local = true;
     try { collab.bc = new BroadcastChannel('writer-room-' + room); }
     catch (e) { toast('无法建立本地协作通道'); return; }
+
     collab.bc.onmessage = function (e) {
       var msg = e.data;
       if (!msg || msg.from === state.selfId) return;
@@ -1288,15 +1312,17 @@ input[type="range"].slider::-moz-range-thumb {
         if (!editor.value) {
           editor.value = String(msg.content || '');
           lastSyncedText = editor.value;
+          if (msg.title) titleInput.value = msg.title;
           countText();
         }
         return;
       }
       handleMessage(msg);
     };
+
     collab.ready = true;
-    collab.bc.postMessage({ type: 'hello', from: state.selfId });
     lastSyncedText = editor.value;
+    collab.bc.postMessage({ type: 'hello', from: state.selfId });
     state.peers = [{ id: state.selfId, name: state.selfName + '（本机）', typing: false }];
     renderPeers(); updateSharePanel();
   }
@@ -1308,15 +1334,18 @@ input[type="range"].slider::-moz-range-thumb {
     var ws;
     try { ws = new WebSocket(wsUrl); } catch (e) { toast('无法连接协作服务器'); return; }
     collab.ws = ws;
+
     ws.onopen = function () { collab.retry = 0; state.online = true; updateSharePanel(); renderPeers(); };
+
     ws.onmessage = function (e) {
       var msg; try { msg = JSON.parse(e.data); } catch (err) { return; }
       handleMessage(msg);
     };
+
     ws.onclose = function () {
       collab.ready = false; state.online = false; updateSharePanel();
       state.peers = [];
-      renderPeers(); 
+      renderPeers(); updateTypingBanner();
       if (state.room && collab.retry < 6) {
         collab.retry++;
         clearTimeout(collab.reconnectTimer);
@@ -1331,6 +1360,7 @@ input[type="range"].slider::-moz-range-thumb {
     state.room = room;
     if (CONFIG.SERVER) connectServer(room); else connectLocal(room);
   }
+
   function disconnectRoom(silent) {
     if (collab.bc) { try { collab.bc.close(); } catch (e) {} collab.bc = null; }
     if (collab.ws) { try { collab.ws.close(); } catch (e) {} collab.ws = null; }
@@ -1339,7 +1369,7 @@ input[type="range"].slider::-moz-range-thumb {
     state.selfTyping = false;
     collab.ready = false;
     state.online = false;
-    if (!silent) { state.room = ''; state.peers = []; renderPeers(); }
+    if (!silent) { state.room = ''; state.peers = []; renderPeers(); updateTypingBanner(); }
   }
 
   function renderPeers() {
@@ -1377,6 +1407,7 @@ input[type="range"].slider::-moz-range-thumb {
     }
     sendToRoom(payload);
   }
+
   function resolveComment(id, resolved) {
     var payload = { type: 'comment:resolve', id: id, resolved: resolved };
     if (collab.local) sendToRoom(payload);
@@ -1385,6 +1416,7 @@ input[type="range"].slider::-moz-range-thumb {
       if (state.comments[i].id === id) { state.comments[i].resolved = resolved; break; }
     renderComments();
   }
+
   function deleteComment(id) {
     var payload = { type: 'comment:delete', id: id };
     if (collab.local) sendToRoom(payload);
@@ -1392,6 +1424,7 @@ input[type="range"].slider::-moz-range-thumb {
     state.comments = state.comments.filter(function (c) { return c.id !== id; });
     renderComments();
   }
+
   function fmtTime(ts) {
     if (!ts) return '';
     var d = new Date(ts), now = new Date();
@@ -1444,7 +1477,7 @@ input[type="range"].slider::-moz-range-thumb {
           editor.setSelectionRange(idx, idx + c.quote.length);
           var ratio = idx / Math.max(1, editor.value.length);
           editor.scrollTop = ratio * (editor.scrollHeight - editor.clientHeight);
-          setTimeout(function () { skipFocusToEnd = false; }, 300);
+          setTimeout(function () { skipFocusToEnd = false; }, 400);
         });
         meta.appendChild(goBtn);
       }
@@ -1469,7 +1502,6 @@ input[type="range"].slider::-moz-range-thumb {
 
   function openCommentSheet() {
     composerSlot.innerHTML = '';
-
     var sel = '', start = -1, end = -1;
 
     if (document.activeElement === editor && editor.selectionStart !== editor.selectionEnd) {
@@ -1538,15 +1570,17 @@ input[type="range"].slider::-moz-range-thumb {
       shareLinkInput.value = buildShareUrl();
     }
     shareHint.innerHTML = CONFIG.SERVER
-      ? '链接有效期与你的服务器存储策略一致。打开链接的人可以实时看到你的输入，并添加批注。<br><br>为避免同时输入互相覆盖，一方在打字时，另一方的编辑器会暂时只读。'
+      ? '链接有效期与你的服务器存储策略一致。打开链接的人可以实时看到你的输入，并添加批注。<br><br>两人可以同时在不同位置编辑，互不覆盖。'
       : '当前为<strong>本地演示模式</strong>：同一浏览器的多个标签页之间可以实时同步。';
   }
+
   function buildShareUrl() {
     var u = new URL(window.location.href);
     u.searchParams.set('room', state.room);
     u.hash = '';
     return u.toString();
   }
+
   function createRoom() {
     var room = randId(10);
     if (CONFIG.SERVER) {
@@ -1557,6 +1591,7 @@ input[type="range"].slider::-moz-range-thumb {
     }
     connectRoom(room); updateSharePanel(); afterRoomReady(room);
   }
+
   function afterRoomReady(room) {
     try {
       var u = new URL(window.location.href);
@@ -1620,8 +1655,7 @@ input[type="range"].slider::-moz-range-thumb {
           buf.forEach(function (cl) {
             kids.push(new P({
               children: [new docx.TextRun({ text: cl || ' ', font: 'Consolas', size: 20 })],
-              spacing: { line: 260 },
-              shading: { fill: 'F5F5F5' }
+              spacing: { line: 260 }, shading: { fill: 'F5F5F5' }
             }));
           });
           buf = []; inCode = false;
@@ -1629,7 +1663,6 @@ input[type="range"].slider::-moz-range-thumb {
         continue;
       }
       if (inCode) { buf.push(L); continue; }
-
       if (!L.trim()) { kids.push(new P({ children: [], spacing: { after: 120 } })); continue; }
 
       m = L.match(/^(#{1,6})\s+(.*)$/);
@@ -1654,16 +1687,10 @@ input[type="range"].slider::-moz-range-thumb {
       }
 
       m = L.match(/^\s*[-*+]\s+(.*)$/);
-      if (m) {
-        kids.push(new P({ bullet: { level: 0 }, children: parseRuns(m[1]), spacing: { after: 80, line: lt } }));
-        continue;
-      }
+      if (m) { kids.push(new P({ bullet: { level: 0 }, children: parseRuns(m[1]), spacing: { after: 80, line: lt } })); continue; }
 
       m = L.match(/^\s*\d+[.)]\s+(.*)$/);
-      if (m) {
-        kids.push(new P({ numbering: { reference: 'ol', level: 0 }, children: parseRuns(m[1]), spacing: { after: 80, line: lt } }));
-        continue;
-      }
+      if (m) { kids.push(new P({ numbering: { reference: 'ol', level: 0 }, children: parseRuns(m[1]), spacing: { after: 80, line: lt } })); continue; }
 
       m = L.match(/^\s*>\s?(.*)$/);
       if (m) {
@@ -1805,6 +1832,7 @@ input[type="range"].slider::-moz-range-thumb {
   editor.addEventListener('input', function () {
     countText();
     scheduleLocalSave();
+    schedulePush();
     notifyTyping();
   });
   editor.addEventListener('select', function () {
@@ -1825,7 +1853,7 @@ input[type="range"].slider::-moz-range-thumb {
       var s = this.selectionStart, t = this.selectionEnd;
       this.value = this.value.slice(0, s) + '  ' + this.value.slice(t);
       this.selectionStart = this.selectionEnd = s + 2;
-      countText(); scheduleLocalSave(); notifyTyping();
+      countText(); scheduleLocalSave(); schedulePush();
     }
   });
   editor.addEventListener('focus', function () {
@@ -1836,7 +1864,6 @@ input[type="range"].slider::-moz-range-thumb {
       editor.setSelectionRange(len, len);
     }, 60);
   });
-
 
   var pushThrottle = null;
   titleInput.addEventListener('input', function () {
@@ -1889,6 +1916,12 @@ input[type="range"].slider::-moz-range-thumb {
     loadBgImage(f);
     e.target.value = '';
   });
+  if (rangeVeil) {
+    rangeVeil.addEventListener('input', function () {
+      typo.bgVeil = parseInt(this.value, 10) || 0;
+      applyTypo(); saveTypo();
+    });
+  }
 
   btnCreateRoom.addEventListener('click', createRoom);
   btnCopyLink.addEventListener('click', function () { copyToClipboard(shareLinkInput.value, '链接已复制，发给朋友即可'); });
@@ -1912,9 +1945,9 @@ input[type="range"].slider::-moz-range-thumb {
       alert(
         '宫花红 · 使用说明\n\n' +
         '【写作】\n点顶栏中间可以改标题；正文是一块干净的白纸。\n所有内容都会自动存在本机浏览器里，关掉页面也不会丢。\n\n' +
-        '【排版】\n点底部「字体」可以换字体、字号、行距、首行缩进、\n背景色、文字颜色，也可以上传图片当背景。\n\n' +
-        '【批注】\n先在正文里选中一段文字，再点底部「批注」，就能针对这段写意见。\n\n' +
-        '【协作】\n点底部「分享」生成链接，把链接发给朋友，\n对方打开就能和你同时编辑同一篇文档。\n为避免互相覆盖，一方在打字时，另一方的编辑器会暂时只读。\n\n' +
+        '【排版】\n点底部「字体」可以换字体、字号、行距、首行缩进、\n背景色、文字颜色，也可以上传图片当背景（可调透明度）。\n\n' +
+        '【批注】\n先在正文里选中一段文字，再点底部「批注」，就能针对这段写意见。\n点批注里的「定位」可以跳到原文对应位置。\n\n' +
+        '【协作】\n点底部「分享」生成链接，把链接发给朋友，\n对方打开就能和你同时编辑同一篇文档。\n两个人可以在不同位置同时打字，互不覆盖。\n\n' +
         '【导出】\n点底部「导出」保存为 Word 文档。'
       );
     }, 220);
