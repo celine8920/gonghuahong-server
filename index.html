@@ -23,7 +23,7 @@
   --bg: #FCFAF6;
   --bg-elev: #FFFFFF;
   --bg-sunken: #F4F1EA;
-  --text: #33322E;
+  --text: #222222;
   --text-2: #8C877D;
   --text-3: #B5AFA3;
   --line: #EAE5DB;
@@ -59,7 +59,6 @@ body {
   background-position: center;
   background-attachment: fixed;
 }
-body.has-bg-image { background-color: var(--bg); }
 
 button, input, textarea { font-family: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
 button { border: 0; background: transparent; cursor: pointer; }
@@ -67,9 +66,9 @@ button { border: 0; background: transparent; cursor: pointer; }
 .app { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); }
 body.has-bg-image .app { background: transparent; }
 body.has-bg-image .topbar,
-body.has-bg-image .toolbar { background: rgba(255,255,255,.65); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+body.has-bg-image .toolbar { background: rgba(255,255,255,.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 body.has-bg-image[data-theme="dark"] .topbar,
-body.has-bg-image[data-theme="dark"] .toolbar { background: rgba(20,20,24,.55); }
+body.has-bg-image[data-theme="dark"] .toolbar { background: rgba(20,20,24,.6); }
 
 .topbar {
   flex: 0 0 auto; height: 52px; padding: var(--safe-t) 4px 0;
@@ -303,13 +302,12 @@ input[type="range"].slider::-moz-range-thumb {
 .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 0 2px; }
 .swatch {
   position: relative;
-  height: 42px;
+  height: 44px;
   border-radius: 10px;
   border: 2px solid transparent;
   cursor: pointer;
   transition: transform .12s, border-color .15s, box-shadow .15s;
   overflow: hidden;
-  background-clip: padding-box;
 }
 .swatch:active { transform: scale(.95); }
 .swatch.on {
@@ -463,7 +461,6 @@ input[type="range"].slider::-moz-range-thumb {
 }
 </style>
 </head>
-
 <body>
 
 <div class="app">
@@ -533,7 +530,7 @@ input[type="range"].slider::-moz-range-thumb {
 
 <div class="scrim" id="scrim"></div>
 
-<section class="sheet" id="sheetFont" role="dialog" aria-modal="true" aria-label="字体与排版">
+<section class="sheet" id="sheetFont" role="dialog" aria-modal="true" aria-label="字体与外观">
   <div class="sheet-grip"></div>
   <div class="sheet-head">
     <span class="sheet-title">字体与外观</span>
@@ -1062,9 +1059,6 @@ input[type="range"].slider::-moz-range-thumb {
   }
   function scheduleLocalSave() { clearTimeout(saveTimer); saveTimer = setTimeout(persistLocal, 600); }
 
-  /* ============================================================
-     协作
-     ============================================================ */
   var collab = { ws: null, bc: null, local: false, ready: false, suppress: false, pushTimer: null, reconnectTimer: null, retry: 0, typingTimer: null };
   var COLORS = ['#4A8B6F','#C2873F','#5B7FBF','#B3618A','#8A7BC8','#4F9BA8','#C2604F','#7E9B4A'];
 
@@ -1104,7 +1098,6 @@ input[type="range"].slider::-moz-range-thumb {
     collab.pushTimer = setTimeout(pushContent, 260);
   }
 
-  /* 打字通知：立即发 typing=true，停手后发 typing=false + 完整文本 */
   function notifyTyping() {
     if (!collab.ready) return;
     if (!state.selfTyping) {
@@ -1133,7 +1126,6 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   function updateTypingLock() {
-    /* 有别人正在打字，且自己当前没有在打字 → 锁定 */
     var others = [];
     for (var i = 0; i < state.peers.length; i++) {
       var p = state.peers[i];
@@ -1199,7 +1191,6 @@ input[type="range"].slider::-moz-range-thumb {
       return;
     }
     if (msg.type === 'typing') {
-      /* 服务器会把 typing 广播到 peers，本地模式需要手动合并 */
       if (collab.local) {
         for (var k = 0; k < state.peers.length; k++) {
           if (state.peers[k].id === msg.from) state.peers[k].typing = !!msg.active;
@@ -1271,7 +1262,6 @@ input[type="range"].slider::-moz-range-thumb {
     };
     ws.onclose = function () {
       collab.ready = false; state.online = false; updateSharePanel();
-      /* 断线时解除锁定 */
       state.peers = [];
       renderPeers(); updateTypingLock();
       if (state.room && collab.retry < 6) {
@@ -1321,9 +1311,6 @@ input[type="range"].slider::-moz-range-thumb {
     peersEl.classList.add('show');
   }
 
-  /* ============================================================
-     批注
-     ============================================================ */
   function sendComment(quote, text) {
     var payload = { type: 'comment:add', comment: { quote: quote, text: text, name: state.selfName } };
     if (!collab.ready) {
@@ -1339,16 +1326,16 @@ input[type="range"].slider::-moz-range-thumb {
   }
   function resolveComment(id, resolved) {
     var payload = { type: 'comment:resolve', id: id, resolved: resolved };
-    if (!collab.local && collab.ws && collab.ws.readyState === 1) { sendToRoom(payload); return; }
-    if (collab.local) { sendToRoom(payload); }
+    if (collab.local) sendToRoom(payload);
+    else if (collab.ws && collab.ws.readyState === 1) { sendToRoom(payload); return; }
     for (var i = 0; i < state.comments.length; i++)
       if (state.comments[i].id === id) { state.comments[i].resolved = resolved; break; }
     renderComments();
   }
   function deleteComment(id) {
     var payload = { type: 'comment:delete', id: id };
-    if (!collab.local && collab.ws && collab.ws.readyState === 1) { sendToRoom(payload); return; }
-    if (collab.local) { sendToRoom(payload); }
+    if (collab.local) sendToRoom(payload);
+    else if (collab.ws && collab.ws.readyState === 1) { sendToRoom(payload); return; }
     state.comments = state.comments.filter(function (c) { return c.id !== id; });
     renderComments();
   }
@@ -1427,9 +1414,7 @@ input[type="range"].slider::-moz-range-thumb {
   function openCommentSheet() {
     composerSlot.innerHTML = '';
 
-    /* 优先用缓存的选区（点击按钮时 textarea 会失焦） */
-    var sel = '';
-    var start = -1, end = -1;
+    var sel = '', start = -1, end = -1;
 
     if (document.activeElement === editor && editor.selectionStart !== editor.selectionEnd) {
       start = editor.selectionStart; end = editor.selectionEnd;
@@ -1525,9 +1510,6 @@ input[type="range"].slider::-moz-range-thumb {
     toast('协作已开启，把链接发给朋友吧');
   }
 
-  /* ============================================================
-     Word 导出
-     ============================================================ */
   function bodyPt() { return Math.round(Math.min(16, Math.max(10.5, typo.size * 0.62)) * 2); }
   function lineTwips() { return Math.round(360 * typo.lh * (typo.size / 19)); }
 
@@ -1573,34 +1555,60 @@ input[type="range"].slider::-moz-range-thumb {
         spacing: { after: 320, line: lt }
       }));
     }
+
     for (var i = 0; i < lines.length; i++) {
       var L = lines[i], m;
+
       if (/^\s*```/.test(L)) {
         if (inCode) {
           buf.forEach(function (cl) {
-            kids.push(new P({ children: [new docx.TextRun({ text: cl || ' ', font: 'Consolas', size: 20 })], spacing: { line: 260 }, shading: { fill: 'F5F5F5' } }));
+            kids.push(new P({
+              children: [new docx.TextRun({ text: cl || ' ', font: 'Consolas', size: 20 })],
+              spacing: { line: 260 },
+              shading: { fill: 'F5F5F5' }
+            }));
           });
           buf = []; inCode = false;
         } else { inCode = true; }
         continue;
       }
       if (inCode) { buf.push(L); continue; }
+
       if (!L.trim()) { kids.push(new P({ children: [], spacing: { after: 120 } })); continue; }
+
       m = L.match(/^(#{1,6})\s+(.*)$/);
       if (m) {
         var lv = m[1].length;
         var lvls = [HL.HEADING_1, HL.HEADING_2, HL.HEADING_3, HL.HEADING_4, HL.HEADING_5, HL.HEADING_6];
-        kids.push(new P({ heading: lvls[lv - 1], children: parseRuns(m[2], { size: lv === 1 ? 36 : (lv === 2 ? 30 : 26) }), spacing: { before: 240, after: 120, line: lt } }));
+        kids.push(new P({
+          heading: lvls[lv - 1],
+          children: parseRuns(m[2], { size: lv === 1 ? 36 : (lv === 2 ? 30 : 26) }),
+          spacing: { before: 240, after: 120, line: lt }
+        }));
         continue;
       }
+
       if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(L)) {
-        kids.push(new P({ text: '', border: { bottom: { style: 'single', size: 6, color: 'DDD8CE', space: 1 } }, spacing: { before: 160, after: 160 } }));
+        kids.push(new P({
+          text: '',
+          border: { bottom: { style: 'single', size: 6, color: 'DDD8CE', space: 1 } },
+          spacing: { before: 160, after: 160 }
+        }));
         continue;
       }
+
       m = L.match(/^\s*[-*+]\s+(.*)$/);
-      if (m) { kids.push(new P({ bullet: { level: 0 }, children: parseRuns(m[1]), spacing: { after: 80, line: lt } })); continue; }
+      if (m) {
+        kids.push(new P({ bullet: { level: 0 }, children: parseRuns(m[1]), spacing: { after: 80, line: lt } }));
+        continue;
+      }
+
       m = L.match(/^\s*\d+[.)]\s+(.*)$/);
-      if (m) { kids.push(new P({ numbering: { reference: 'ol', level: 0 }, children: parseRuns(m[1]), spacing: { after: 80, line: lt } })); continue; }
+      if (m) {
+        kids.push(new P({ numbering: { reference: 'ol', level: 0 }, children: parseRuns(m[1]), spacing: { after: 80, line: lt } }));
+        continue;
+      }
+
       m = L.match(/^\s*>\s?(.*)$/);
       if (m) {
         kids.push(new P({
@@ -1611,4 +1619,311 @@ input[type="range"].slider::-moz-range-thumb {
         }));
         continue;
       }
-      var opts = { children: parseRuns(L),
+
+      var opts = { children: parseRuns(L), spacing: { after: 160, line: lt } };
+      if (typo.indent) opts.indent = { firstLine: Math.round(pt * 20) };
+      kids.push(new P(opts));
+    }
+
+    var doc = new docx.Document({
+      creator: '宫花红',
+      title: title || '未命名',
+      styles: {
+        default: {
+          document: {
+            run: { font: fontName, size: pt, color: colorHex },
+            paragraph: { spacing: { line: lt, after: 160 } }
+          }
+        }
+      },
+      numbering: {
+        config: [{ reference: 'ol', levels: [{ level: 0, format: 'decimal', text: '%1.', alignment: 'start' }] }]
+      },
+      sections: [{
+        properties: {
+          page: {
+            size: { width: 11906, height: 16838 },
+            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 }
+          }
+        },
+        children: kids
+      }]
+    });
+
+    return docx.Packer.toBlob(doc);
+  }
+
+  function buildLegacyDoc(text, title, filename) {
+    var fontName = getFont(typo.font).doc;
+    var pt = Math.min(16, Math.max(10.5, typo.size * 0.62)).toFixed(1);
+    var indent = typo.indent ? 'text-indent:2em;' : '';
+    var fg = typo.fg || '#222222';
+
+    var html =
+      '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
+      'xmlns:w="urn:schemas-microsoft-com:office:word" ' +
+      'xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">' +
+      '<title>' + esc(title || '文章') + '</title>' +
+      '<style>@page{size:A4;margin:2.5cm}' +
+      'body{font-family:"' + fontName + '",SimSun,serif;font-size:' + pt + 'pt;' +
+      'line-height:' + typo.lh + ';color:' + fg + '}' +
+      'h1,h2,h3,h4,h5,h6{font-family:inherit;font-weight:bold}' +
+      'p{' + indent + '}' +
+      'blockquote{border-left:3px solid #ddd8ce;padding-left:12px;color:#8c877d}' +
+      'pre{background:#f5f5f5;padding:10px;font-family:Consolas,monospace;font-size:10.5pt}' +
+      'code{font-family:Consolas,monospace;background:#f1f3ee;padding:1px 3px}' +
+      'hr{border:0;border-top:1px solid #ddd8ce}</style></head><body>' +
+      (title && title.trim() ? '<h1 style="font-size:18pt">' + esc(title.trim()) + '</h1>' : '') +
+      md(text) + '</body></html>';
+
+    return {
+      blob: new Blob(['\ufeff', html], { type: 'application/msword' }),
+      filename: filename.replace(/\.docx$/, '.doc')
+    };
+  }
+
+  function buildWordFile(text, title) {
+    var filename = (title && title.trim() ? title.trim().slice(0, 30) : '未命名') + '-' + stamp() + '.docx';
+    if (window.docx && window.docx.Packer) {
+      return buildDocx(text, title).then(function (blob) {
+        return { blob: blob, filename: filename };
+      }).catch(function () { return buildLegacyDoc(text, title, filename); });
+    }
+    return Promise.resolve(buildLegacyDoc(text, title, filename));
+  }
+
+  function downloadBlob(blob, filename) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+  }
+
+  function exportWord() {
+    var text = editor.value;
+    if (!text.trim()) { toast('还没有内容可以导出'); return; }
+    toast('正在生成 Word…');
+    buildWordFile(text, titleInput.value).then(function (r) {
+      downloadBlob(r.blob, r.filename);
+      toast('已导出 ' + r.filename);
+    }).catch(function () { toast('导出失败，请重试'); });
+  }
+
+  function readFile(file) {
+    if (!file) return;
+    var name = (file.name || '').toLowerCase();
+    var isText = /\.(txt|md|markdown|text|json|csv|html?|xml|log|js|css)$/.test(name) || (file.type && file.type.indexOf('text') === 0);
+    if (!isText && !confirm('“' + file.name + '”可能不是纯文本，仍要尝试读取吗？')) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var c = String(reader.result || '');
+      if (editor.value.trim()) {
+        var append = confirm('已载入：' + file.name + '\n\n「确定」= 追加到末尾\n「取消」= 替换当前内容');
+        editor.value = append ? editor.value.replace(/\s*$/, '') + '\n\n' + c : c;
+      } else {
+        editor.value = c;
+      }
+      countText(); scheduleLocalSave(); schedulePush();
+      editor.scrollTop = 0;
+      toast('已载入：' + file.name);
+    };
+    reader.onerror = function () { toast('读取失败，请重试'); };
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  function loadBgImage(file) {
+    if (!file) return;
+    if (!/^image\//.test(file.type)) { toast('请选择图片文件'); return; }
+    if (file.size > 3 * 1024 * 1024) { toast('图片太大（建议小于 3MB）'); return; }
+    var reader = new FileReader();
+    reader.onload = function () {
+      typo.bgImage = String(reader.result || '');
+      applyTypo(); saveTypo();
+      toast('背景图片已设置');
+    };
+    reader.onerror = function () { toast('图片读取失败'); };
+    reader.readAsDataURL(file);
+  }
+
+  editor.addEventListener('input', function () {
+    countText();
+    scheduleLocalSave();
+    notifyTyping();
+  });
+  editor.addEventListener('select', function () {
+    state.lastSel = { start: editor.selectionStart, end: editor.selectionEnd };
+  });
+  editor.addEventListener('mouseup', function () {
+    state.lastSel = { start: editor.selectionStart, end: editor.selectionEnd };
+  });
+  editor.addEventListener('keyup', function (e) {
+    if (e.shiftKey || e.key === 'Shift' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' ||
+        e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Home' || e.key === 'End') {
+      state.lastSel = { start: editor.selectionStart, end: editor.selectionEnd };
+    }
+  });
+  editor.addEventListener('keydown', function (e) {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      var s = this.selectionStart, t = this.selectionEnd;
+      this.value = this.value.slice(0, s) + '  ' + this.value.slice(t);
+      this.selectionStart = this.selectionEnd = s + 2;
+      countText(); scheduleLocalSave(); notifyTyping();
+    }
+  });
+  editor.addEventListener('focus', function () {
+    setTimeout(function () { var len = editor.value.length; editor.setSelectionRange(len, len); }, 60);
+  });
+
+  var pushThrottle = null;
+  titleInput.addEventListener('input', function () {
+    scheduleLocalSave();
+    clearTimeout(pushThrottle);
+    pushThrottle = setTimeout(pushTitle, 300);
+  });
+
+  $('toolFont').addEventListener('click', function () { openSheet(sheetFont); });
+  $('toolComment').addEventListener('click', openCommentSheet);
+  $('toolShare').addEventListener('click', function () { updateSharePanel(); openSheet(sheetShare); });
+  $('toolExport').addEventListener('click', exportWord);
+  $('btnShareTop').addEventListener('click', function () { updateSharePanel(); openSheet(sheetShare); });
+  $('btnMenu').addEventListener('click', function () { openSheet(sheetMenu); });
+
+  scrim.addEventListener('click', closeSheet);
+  var closers = document.querySelectorAll('[data-close]');
+  for (var ci = 0; ci < closers.length; ci++) closers[ci].addEventListener('click', closeSheet);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      if (previewLayer.classList.contains('show')) { previewLayer.classList.remove('show'); return; }
+      closeSheet();
+      return;
+    }
+    var mod = e.ctrlKey || e.metaKey;
+    if (mod && (e.key === 's' || e.key === 'S')) { e.preventDefault(); persistLocal(); toast('已保存到本机'); }
+  });
+
+  rangeSize.addEventListener('input', function () { typo.size = parseInt(this.value, 10) || DEFAULT_TYPO.size; applyTypo(); saveTypo(); });
+  $('sizeMinus').addEventListener('click', function () { typo.size = Math.max(MIN_SIZE, typo.size - 1); applyTypo(); saveTypo(); });
+  $('sizePlus').addEventListener('click', function () { typo.size = Math.min(MAX_SIZE, typo.size + 1); applyTypo(); saveTypo(); });
+  rangeLh.addEventListener('input', function () { typo.lh = parseFloat(this.value) || DEFAULT_TYPO.lh; applyTypo(); saveTypo(); });
+  swIndent.addEventListener('click', function () { typo.indent = !typo.indent; applyTypo(); saveTypo(); });
+  $('btnResetTypo').addEventListener('click', function () {
+    typo = Object.assign({}, DEFAULT_TYPO);
+    applyTypo(); saveTypo();
+    toast('已恢复默认设置');
+  });
+
+  $('btnBgImage').addEventListener('click', function () { bgImageInput.click(); });
+  $('btnBgClear').addEventListener('click', function () {
+    if (!typo.bgImage) { toast('当前没有图片背景'); return; }
+    typo.bgImage = '';
+    applyTypo(); saveTypo();
+    toast('已清除图片背景');
+  });
+  bgImageInput.addEventListener('change', function (e) {
+    var f = e.target.files && e.target.files[0];
+    loadBgImage(f);
+    e.target.value = '';
+  });
+
+  btnCreateRoom.addEventListener('click', createRoom);
+  btnCopyLink.addEventListener('click', function () { copyToClipboard(shareLinkInput.value, '链接已复制，发给朋友即可'); });
+  shareLinkInput.addEventListener('click', function () { this.select(); });
+
+  $('miPreview').addEventListener('click', function () {
+    closeSheet();
+    previewDoc.innerHTML = md(editor.value) || '<p style="color:var(--text-3)">还没有内容</p>';
+    previewLayer.classList.add('show');
+  });
+  $('btnClosePreview').addEventListener('click', function () { previewLayer.classList.remove('show'); });
+  $('miCopy').addEventListener('click', function () {
+    closeSheet();
+    if (!editor.value) { toast('还没有内容'); return; }
+    copyToClipboard(editor.value, '已复制全文');
+  });
+  $('miImport').addEventListener('click', function () { closeSheet(); fileInput.click(); });
+  $('miHelp').addEventListener('click', function () {
+    closeSheet();
+    setTimeout(function () {
+      alert(
+        '宫花红 · 使用说明\n\n' +
+        '【写作】\n点顶栏中间可以改标题；正文是一块干净的白纸。\n所有内容都会自动存在本机浏览器里，关掉页面也不会丢。\n\n' +
+        '【排版】\n点底部「字体」可以换字体、字号、行距、首行缩进、\n背景色、文字颜色，也可以上传图片当背景。\n\n' +
+        '【批注】\n先在正文里选中一段文字，再点底部「批注」，就能针对这段写意见。\n\n' +
+        '【协作】\n点底部「分享」生成链接，把链接发给朋友，\n对方打开就能和你同时编辑同一篇文档。\n为避免互相覆盖，一方在打字时，另一方的编辑器会暂时只读。\n\n' +
+        '【导出】\n点底部「导出」保存为 Word 文档。'
+      );
+    }, 220);
+  });
+  $('miClear').addEventListener('click', function () {
+    closeSheet();
+    if (!editor.value) { toast('已经是空的了'); return; }
+    setTimeout(function () {
+      if (confirm('确定清空正文吗？此操作不可撤销。')) {
+        editor.value = '';
+        countText(); scheduleLocalSave(); schedulePush();
+        toast('已清空');
+      }
+    }, 220);
+  });
+
+  fileInput.addEventListener('change', function (e) {
+    var f = e.target.files && e.target.files[0];
+    readFile(f); e.target.value = '';
+  });
+
+  ['dragover', 'drop'].forEach(function (ev) {
+    document.addEventListener(ev, function (e) { e.preventDefault(); });
+  });
+  document.addEventListener('drop', function (e) {
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) readFile(f);
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') { persistLocal(); pushContent(); }
+  });
+  window.addEventListener('beforeunload', persistLocal);
+
+  (function init() {
+    initSelf();
+    loadTypo();
+    buildFontList();
+    buildSwatches(bgSwatches, BG_COLORS, 'bg');
+    buildSwatches(fgSwatches, FG_COLORS, 'fg');
+    applyTypo();
+    renderComments();
+
+    var room = '';
+    try { room = new URL(window.location.href).searchParams.get('room') || ''; } catch (e) {}
+
+    if (room && /^[A-Za-z0-9_-]{4,32}$/.test(room)) {
+      connectRoom(room);
+      updateSharePanel();
+    } else {
+      try {
+        var raw = localStorage.getItem(LOCAL_KEY);
+        if (raw) {
+          var o = JSON.parse(raw);
+          if (o) {
+            if (typeof o.title === 'string') titleInput.value = o.title;
+            if (typeof o.content === 'string') editor.value = o.content;
+          }
+        }
+      } catch (e) {}
+      countText();
+      updateSharePanel();
+    }
+
+    if (window.innerWidth >= 720) {
+      editor.focus();
+      editor.setSelectionRange(editor.value.length, editor.value.length);
+    }
+  })();
+
+})();
+</script>
+</body>
+</html>
