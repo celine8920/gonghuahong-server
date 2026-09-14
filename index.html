@@ -1040,6 +1040,8 @@ input[type="range"].slider::-moz-range-thumb {
     return out;
   }
 
+  var skipFocusToEnd = false;
+
   var state = {
     title: '', comments: [], room: '', online: false,
     selfId: '', selfName: '', selfColor: '', peers: [],
@@ -1385,10 +1387,13 @@ input[type="range"].slider::-moz-range-thumb {
         goBtn.addEventListener('click', function () {
           var idx = editor.value.indexOf(c.quote);
           if (idx < 0) { toast('原文已被修改，无法定位'); return; }
-          closeSheet(); editor.focus();
+          skipFocusToEnd = true;
+          closeSheet();
+          editor.focus();
           editor.setSelectionRange(idx, idx + c.quote.length);
           var ratio = idx / Math.max(1, editor.value.length);
           editor.scrollTop = ratio * (editor.scrollHeight - editor.clientHeight);
+          setTimeout(function () { skipFocusToEnd = false; }, 300);
         });
         meta.appendChild(goBtn);
       }
@@ -1773,8 +1778,14 @@ input[type="range"].slider::-moz-range-thumb {
     }
   });
   editor.addEventListener('focus', function () {
-    setTimeout(function () { var len = editor.value.length; editor.setSelectionRange(len, len); }, 60);
+    if (skipFocusToEnd) return;
+    setTimeout(function () {
+      if (skipFocusToEnd) return;
+      var len = editor.value.length;
+      editor.setSelectionRange(len, len);
+    }, 60);
   });
+
 
   var pushThrottle = null;
   titleInput.addEventListener('input', function () {
