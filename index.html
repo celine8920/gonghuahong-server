@@ -8,25 +8,20 @@
 <meta name="apple-mobile-web-app-title" content="宫花红">
 <title>宫花红</title>
 
-<!-- 霞鹜文楷（屏幕阅读版），按需分片加载，不阻塞首屏 -->
+<!-- 霞鹜文楷（屏幕阅读版） -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.css">
-
-<!-- Word(.docx) 生成库；加载失败时自动降级为 .doc -->
+<!-- Word 导出库 -->
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 
 <style>
-/* ============================================================
-   自定义字体
-   ============================================================ */
+/* ================= 自定义字体 ================= */
 @font-face {
   font-family: "汇文明朝体";
   src: url("./fonts/Huiwen-mincho.otf") format("opentype");
   font-display: swap;
 }
 
-/* ============================================================
-   设计变量
-   ============================================================ */
+/* ================= 设计变量 ================= */
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
@@ -38,18 +33,16 @@
   --text-3: #B5AFA3;
   --line: #EAE5DB;
   --accent: #4A8B6F;
-  --accent-soft: rgba(74, 139, 111, .1);
+  --accent-soft: rgba(74,139,111,.1);
   --accent-strong: #3A7359;
   --danger: #C25B4E;
-  --shadow: 0 8px 30px rgba(60, 50, 30, .13);
+  --shadow: 0 8px 30px rgba(60,50,30,.13);
 
   --font-ui: -apple-system, BlinkMacSystemFont, "PingFang SC",
              "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
-
-  /* 正文写作字体（由设置动态覆盖） */
-  --font-writer: "LXGW WenKai Screen", "LXGW WenKai",
-                 "汇文明朝体", "Huiwen-Mincho", "Songti SC",
-                 "Source Han Serif SC", "Noto Serif SC", serif;
+  --font-writer: "LXGW WenKai Screen", "LXGW WenKai", "汇文明朝体",
+                 "Huiwen-Mincho", "Songti SC", "Source Han Serif SC",
+                 "Noto Serif SC", serif;
   --writer-size: 19px;
   --writer-lh: 1.95;
   --writer-indent: 0em;
@@ -67,14 +60,13 @@
   --text-3: #57544D;
   --line: #2B2B31;
   --accent: #6FB894;
-  --accent-soft: rgba(111, 184, 148, .13);
+  --accent-soft: rgba(111,184,148,.13);
   --accent-strong: #8ACCA9;
   --danger: #E08375;
-  --shadow: 0 10px 34px rgba(0, 0, 0, .55);
+  --shadow: 0 10px 34px rgba(0,0,0,.55);
 }
 
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-
 html, body { height: 100%; margin: 0; }
 
 body {
@@ -92,12 +84,9 @@ button, input, textarea {
   color: inherit;
   -webkit-tap-highlight-color: transparent;
 }
-
 button { border: 0; background: transparent; cursor: pointer; }
 
-/* ============================================================
-   骨架
-   ============================================================ */
+/* ================= 骨架 ================= */
 .app {
   position: fixed;
   inset: 0;
@@ -117,7 +106,6 @@ button { border: 0; background: transparent; cursor: pointer; }
   background: var(--bg);
   position: relative;
   z-index: 20;
-  transition: opacity .3s, transform .3s;
 }
 
 .title-input {
@@ -141,8 +129,7 @@ button { border: 0; background: transparent; cursor: pointer; }
 
 .icon-btn {
   flex: 0 0 auto;
-  width: 40px;
-  height: 40px;
+  width: 40px; height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -153,13 +140,7 @@ button { border: 0; background: transparent; cursor: pointer; }
 .icon-btn:active { background: var(--bg-sunken); }
 .icon-btn svg { display: block; }
 
-/* 在线头像堆叠 */
-.peers {
-  display: none;
-  align-items: center;
-  padding-right: 2px;
-  flex: 0 0 auto;
-}
+.peers { display: none; align-items: center; padding-right: 2px; flex: 0 0 auto; }
 .peers.show { display: inline-flex; }
 
 .peer-dot {
@@ -207,12 +188,10 @@ button { border: 0; background: transparent; cursor: pointer; }
   text-indent: 0;
   letter-spacing: 0;
 }
-
 .editor::-webkit-scrollbar { width: 4px; }
 .editor::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 .editor::-webkit-scrollbar-track { background: transparent; }
 
-/* 字数浮层 */
 .counter {
   position: absolute;
   right: 14px;
@@ -267,8 +246,7 @@ button { border: 0; background: transparent; cursor: pointer; }
   top: 5px;
   left: 50%;
   margin-left: 4px;
-  min-width: 15px;
-  height: 15px;
+  min-width: 15px; height: 15px;
   padding: 0 4px;
   border-radius: 8px;
   background: var(--danger);
@@ -279,13 +257,11 @@ button { border: 0; background: transparent; cursor: pointer; }
   font-weight: 600;
 }
 
-/* ============================================================
-   通用弹层
-   ============================================================ */
+/* ================= 弹层通用 ================= */
 .scrim {
   position: fixed;
   inset: 0;
-  background: rgba(30, 25, 15, .38);
+  background: rgba(30,25,15,.38);
   opacity: 0;
   pointer-events: none;
   transition: opacity .24s;
@@ -303,14 +279,15 @@ button { border: 0; background: transparent; cursor: pointer; }
   border-radius: 20px 20px 0 0;
   box-shadow: var(--shadow);
   transform: translateY(102%);
-  transition: transform .3s cubic-bezier(.32, .72, 0, 1);
+  transition: transform .3s cubic-bezier(.32,.72,0,1);
   display: flex;
   flex-direction: column;
   max-height: 88dvh;
   padding-bottom: var(--safe-b);
   overflow: hidden;
+  pointer-events: none;   /* ← 关键修复：隐藏时不吃点击 */
 }
-.sheet.show { transform: translateY(0); }
+.sheet.show { transform: translateY(0); pointer-events: auto; }
 
 .sheet-grip {
   flex: 0 0 auto;
@@ -332,17 +309,8 @@ button { border: 0; background: transparent; cursor: pointer; }
   gap: 8px;
   padding: 6px 8px 10px 20px;
 }
-.sheet-title {
-  flex: 1 1 auto;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: .3px;
-}
-.sheet-sub {
-  font-size: 12px;
-  color: var(--text-3);
-  margin-right: 4px;
-}
+.sheet-title { flex: 1 1 auto; font-size: 16px; font-weight: 600; letter-spacing: .3px; }
+.sheet-sub { font-size: 12px; color: var(--text-3); margin-right: 4px; }
 
 .sheet-body {
   flex: 1 1 auto;
@@ -353,13 +321,9 @@ button { border: 0; background: transparent; cursor: pointer; }
   overscroll-behavior: contain;
 }
 
-/* 桌面端：弹层改为居中卡片 */
 @media (min-width: 720px) {
   .sheet {
-    left: 50%;
-    right: auto;
-    bottom: auto;
-    top: 50%;
+    left: 50%; right: auto; bottom: auto; top: 50%;
     width: min(460px, calc(100vw - 48px));
     max-height: min(78vh, 720px);
     border-radius: 20px;
@@ -372,9 +336,7 @@ button { border: 0; background: transparent; cursor: pointer; }
   .sheet-head { padding-top: 16px; }
 }
 
-/* ============================================================
-   设置面板
-   ============================================================ */
+/* ================= 设置面板 ================= */
 .group { margin-bottom: 24px; }
 .group:last-child { margin-bottom: 4px; }
 
@@ -396,7 +358,6 @@ button { border: 0; background: transparent; cursor: pointer; }
   font-variant-numeric: tabular-nums;
 }
 
-/* 字体选项 */
 .font-list { display: flex; flex-direction: column; gap: 3px; }
 
 .font-option {
@@ -414,7 +375,7 @@ button { border: 0; background: transparent; cursor: pointer; }
 .font-option:active { background: var(--bg-sunken); }
 .font-option.active {
   background: var(--accent-soft);
-  border-color: rgba(74, 139, 111, .3);
+  border-color: rgba(74,139,111,.3);
 }
 
 .fo-check {
@@ -427,10 +388,7 @@ button { border: 0; background: transparent; cursor: pointer; }
   transition: background .15s, border-color .15s;
 }
 .fo-check::after { content: "✓"; opacity: 0; transition: opacity .15s; }
-.font-option.active .fo-check {
-  background: var(--accent);
-  border-color: var(--accent);
-}
+.font-option.active .fo-check { background: var(--accent); border-color: var(--accent); }
 .font-option.active .fo-check::after { opacity: 1; }
 
 .fo-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
@@ -443,7 +401,6 @@ button { border: 0; background: transparent; cursor: pointer; }
   text-overflow: ellipsis;
 }
 
-/* 滑块行 */
 .slider-row { display: flex; align-items: center; gap: 10px; padding: 0 2px; }
 
 .step-btn {
@@ -489,7 +446,6 @@ input[type="range"].slider::-moz-range-thumb {
   box-shadow: 0 1px 5px rgba(0,0,0,.25);
 }
 
-/* 开关 */
 .switch-row {
   display: flex;
   align-items: center;
@@ -499,12 +455,7 @@ input[type="range"].slider::-moz-range-thumb {
   padding: 0 4px;
 }
 .switch-label { font-size: 15px; }
-.switch-label small {
-  display: block;
-  font-size: 12px;
-  color: var(--text-3);
-  margin-top: 2px;
-}
+.switch-label small { display: block; font-size: 12px; color: var(--text-3); margin-top: 2px; }
 
 .switch {
   flex: 0 0 auto;
@@ -527,7 +478,6 @@ input[type="range"].slider::-moz-range-thumb {
 .switch.on { background: var(--accent); }
 .switch.on::after { transform: translateX(20px); }
 
-/* 主题分段控件 */
 .segmented {
   display: flex;
   gap: 4px;
@@ -550,7 +500,6 @@ input[type="range"].slider::-moz-range-thumb {
   box-shadow: 0 1px 4px rgba(0,0,0,.09);
 }
 
-/* 预览框 */
 .try-box {
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -564,9 +513,24 @@ input[type="range"].slider::-moz-range-thumb {
   word-break: break-all;
 }
 
-/* ============================================================
-   批注面板
-   ============================================================ */
+.big-btn {
+  width: 100%;
+  height: 50px;
+  border-radius: 14px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background .15s;
+}
+.big-btn:active { background: var(--accent-strong); }
+.big-btn.ghost { background: var(--bg-sunken); color: var(--text); }
+
+/* ================= 批注 ================= */
 .comment-list { display: flex; flex-direction: column; gap: 10px; }
 
 .comment {
@@ -588,7 +552,6 @@ input[type="range"].slider::-moz-range-thumb {
   margin-bottom: 8px;
   max-height: 3.2em;
   overflow: hidden;
-  position: relative;
 }
 
 .comment-text {
@@ -630,7 +593,6 @@ input[type="range"].slider::-moz-range-thumb {
   padding: 34px 20px;
 }
 
-/* 新建批注的输入区 */
 .composer {
   border: 1px solid var(--accent);
   border-radius: 14px;
@@ -668,9 +630,7 @@ input[type="range"].slider::-moz-range-thumb {
   margin-top: 6px;
 }
 
-/* ============================================================
-   分享面板
-   ============================================================ */
+/* ================= 分享 ================= */
 .share-status {
   display: flex;
   align-items: center;
@@ -726,27 +686,6 @@ input[type="range"].slider::-moz-range-thumb {
 }
 .link-box .copy:active { background: var(--accent-strong); }
 
-.big-btn {
-  width: 100%;
-  height: 50px;
-  border-radius: 14px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 16px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: background .15s;
-}
-.big-btn:active { background: var(--accent-strong); }
-.big-btn.ghost {
-  background: var(--bg-sunken);
-  color: var(--text);
-}
-
-/* 帮助文字 */
 .hint {
   font-size: 12.5px;
   line-height: 1.8;
@@ -763,9 +702,7 @@ input[type="range"].slider::-moz-range-thumb {
   color: var(--text-2);
 }
 
-/* ============================================================
-   更多菜单
-   ============================================================ */
+/* ================= 更多菜单 ================= */
 .menu-list { display: flex; flex-direction: column; gap: 2px; }
 
 .menu-item {
@@ -786,9 +723,7 @@ input[type="range"].slider::-moz-range-thumb {
 .menu-item.danger { color: var(--danger); }
 .menu-item.danger svg { color: var(--danger); }
 
-/* ============================================================
-   预览浮层
-   ============================================================ */
+/* ================= 预览浮层 ================= */
 .preview-layer {
   position: fixed;
   inset: 0;
@@ -797,9 +732,10 @@ input[type="range"].slider::-moz-range-thumb {
   display: flex;
   flex-direction: column;
   transform: translateY(100%);
-  transition: transform .3s cubic-bezier(.32, .72, 0, 1);
+  transition: transform .3s cubic-bezier(.32,.72,0,1);
+  pointer-events: none;   /* ← 关键修复 */
 }
-.preview-layer.show { transform: translateY(0); }
+.preview-layer.show { transform: translateY(0); pointer-events: auto; }
 
 .preview-bar {
   flex: 0 0 auto;
@@ -866,15 +802,13 @@ input[type="range"].slider::-moz-range-thumb {
 .preview-doc hr { border: 0; border-top: 1px solid var(--line); margin: 1.8em 0; }
 .preview-doc a { color: var(--accent); }
 
-/* ============================================================
-   Toast
-   ============================================================ */
+/* ================= Toast ================= */
 .toast {
   position: fixed;
   left: 50%;
   bottom: calc(84px + var(--safe-b));
   transform: translate(-50%, 14px);
-  background: rgba(38, 34, 26, .93);
+  background: rgba(38,34,26,.93);
   color: #fff;
   font-size: 14px;
   line-height: 1.5;
@@ -888,12 +822,9 @@ input[type="range"].slider::-moz-range-thumb {
   max-width: 82vw;
   text-align: center;
 }
-[data-theme="dark"] .toast { background: rgba(232, 230, 224, .94); color: #1A1A1A; }
+[data-theme="dark"] .toast { background: rgba(232,230,224,.94); color: #1A1A1A; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-/* ============================================================
-   小屏微调
-   ============================================================ */
 @media (max-width: 420px) {
   .editor { padding: 12px 18px 90px; }
   .preview-scroll { padding: 18px 20px 48px; }
@@ -916,8 +847,7 @@ input[type="range"].slider::-moz-range-thumb {
     </button>
 
     <input class="title-input" id="titleInput" type="text"
-           placeholder="无标题" maxlength="80" autocomplete="off"
-           aria-label="文章标题">
+           placeholder="无标题" maxlength="80" autocomplete="off" aria-label="文章标题">
 
     <div class="peers" id="peers" aria-label="协作者"></div>
 
@@ -934,8 +864,7 @@ input[type="range"].slider::-moz-range-thumb {
 
   <!-- ============ 编辑区 ============ -->
   <div class="editor-wrap">
-    <textarea class="editor" id="editor" spellcheck="false"
-      placeholder="开始写点什么…"></textarea>
+    <textarea class="editor" id="editor" spellcheck="false" placeholder="开始写点什么…"></textarea>
     <div class="counter" id="counter">0 字</div>
   </div>
 
@@ -985,7 +914,7 @@ input[type="range"].slider::-moz-range-thumb {
 <!-- ============ 遮罩 ============ -->
 <div class="scrim" id="scrim"></div>
 
-<!-- ============ 设置面板 ============ -->
+<!-- ============ 字体与排版 ============ -->
 <section class="sheet" id="sheetFont" role="dialog" aria-modal="true" aria-label="字体与排版">
   <div class="sheet-grip"></div>
   <div class="sheet-head">
@@ -1005,24 +934,16 @@ input[type="range"].slider::-moz-range-thumb {
     </div>
 
     <div class="group">
-      <div class="group-label">
-        <span>字号</span><span class="val" id="valSize">19 px</span>
-      </div>
+      <div class="group-label"><span>字号</span><span class="val" id="valSize">19 px</span></div>
       <div class="slider-row">
-        <button class="step-btn" type="button" id="sizeMinus" aria-label="减小字号">
-          <span class="s">A</span>
-        </button>
+        <button class="step-btn" type="button" id="sizeMinus" aria-label="减小字号"><span class="s">A</span></button>
         <input class="slider" type="range" id="rangeSize" min="14" max="40" step="1" value="19">
-        <button class="step-btn" type="button" id="sizePlus" aria-label="增大字号">
-          <span class="l">A</span>
-        </button>
+        <button class="step-btn" type="button" id="sizePlus" aria-label="增大字号"><span class="l">A</span></button>
       </div>
     </div>
 
     <div class="group">
-      <div class="group-label">
-        <span>行距</span><span class="val" id="valLh">1.95</span>
-      </div>
+      <div class="group-label"><span>行距</span><span class="val" id="valLh">1.95</span></div>
       <div class="slider-row">
         <input class="slider" type="range" id="rangeLh" min="1.4" max="2.8" step="0.05" value="1.95">
       </div>
@@ -1058,7 +979,7 @@ input[type="range"].slider::-moz-range-thumb {
   </div>
 </section>
 
-<!-- ============ 批注面板 ============ -->
+<!-- ============ 批注 ============ -->
 <section class="sheet" id="sheetComment" role="dialog" aria-modal="true" aria-label="批注">
   <div class="sheet-grip"></div>
   <div class="sheet-head">
@@ -1077,7 +998,7 @@ input[type="range"].slider::-moz-range-thumb {
   </div>
 </section>
 
-<!-- ============ 分享面板 ============ -->
+<!-- ============ 分享 ============ -->
 <section class="sheet" id="sheetShare" role="dialog" aria-modal="true" aria-label="分享协作">
   <div class="sheet-grip"></div>
   <div class="sheet-head">
@@ -1117,7 +1038,7 @@ input[type="range"].slider::-moz-range-thumb {
   </div>
 </section>
 
-<!-- ============ 更多菜单 ============ -->
+<!-- ============ 更多 ============ -->
 <section class="sheet" id="sheetMenu" role="dialog" aria-modal="true" aria-label="更多">
   <div class="sheet-grip"></div>
   <div class="sheet-head">
@@ -1197,10 +1118,7 @@ input[type="range"].slider::-moz-range-thumb {
   </div>
 </div>
 
-<!-- 隐藏文件选择 -->
 <input type="file" id="fileInput" hidden accept=".txt,.md,.markdown,.html,.htm,.json,.csv,text/*">
-
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1208,27 +1126,21 @@ input[type="range"].slider::-moz-range-thumb {
   'use strict';
 
   /* ============================================================
-     ① 服务器配置
-     ------------------------------------------------------------
-     留空 ""  →  本地模式：只能在自己浏览器的多个标签页之间同步，
-                 适合先体验协作界面，链接发给别人是打不开内容的。
-     填写地址 →  例如 "https://writer.yourdomain.com"
-                 前后端一起部署后填在这里，分享链接才真正可用。
-                 后端代码见随附的 server.js。
+     服务器地址（你的 Render 后端）
      ============================================================ */
   var CONFIG = {
-    SERVER: ''
+    SERVER: 'https://gong-hua-hong.onrender.com'
   };
 
   /* ============================================================
-     ② 可选字体
+     可选字体（5 款）
      ============================================================ */
   var FONTS = [
     {
       id: 'lxgw',
       name: '霞鹜文楷',
       doc: 'LXGW WenKai',
-      sample: '永和九年，岁在癸丑，暮春之初',
+      sample: '宫花红处，春水绿时',
       stack: '"LXGW WenKai Screen","LXGW WenKai","霞鹜文楷",' +
              '"Songti SC","Noto Serif SC",serif'
     },
@@ -1236,13 +1148,13 @@ input[type="range"].slider::-moz-range-thumb {
       id: 'huiwen',
       name: '汇文明朝体',
       doc: '汇文明朝体',
-      sample: '永和九年，岁在癸丑，暮春之初',
+      sample: '宫花红处，春水绿时',
       stack: '"汇文明朝体","Huiwen-Mincho","HuiWenMinChaoTi","HuiwenMincho",' +
              '"Songti SC","Noto Serif SC",serif'
     },
     {
       id: 'tsukushi',
-      name: '筑紫明朝',
+      name: '筑紫明朝体',
       doc: '筑紫明朝',
       sample: 'いろはにほへと　ちりぬるを',
       stack: '"筑紫明朝","Tsukushi Mincho","TsukushiMincho",' +
@@ -1250,19 +1162,10 @@ input[type="range"].slider::-moz-range-thumb {
              '"Hiragino Mincho ProN","Noto Serif JP",serif'
     },
     {
-      id: 'mincho',
-      name: '明朝体（系统明朝体系）',
-      doc: '明朝体',
-      sample: '春はあけぼの、やうやう白くなりゆく',
-      stack: '"明朝体","Yu Mincho","游明朝","Hiragino Mincho ProN",' +
-             '"Hiragino Mincho Pro","Noto Serif JP","Source Han Serif JP",' +
-             '"MS Mincho","ＭＳ 明朝",serif'
-    },
-    {
       id: 'song',
       name: '宋体',
       doc: '宋体',
-      sample: '永和九年，岁在癸丑，暮春之初',
+      sample: '宫花红处，春水绿时',
       stack: '"宋体",SimSun,"Songti SC","Songti TC","STSong",' +
              '"Noto Serif SC",serif'
     },
@@ -1270,86 +1173,50 @@ input[type="range"].slider::-moz-range-thumb {
       id: 'kaiti',
       name: '楷体',
       doc: '楷体',
-      sample: '永和九年，岁在癸丑，暮春之初',
+      sample: '宫花红处，春水绿时',
       stack: '"楷体",KaiTi,"Kaiti SC","STKaiti","KaiTi_GB2312",serif'
-    },
-    {
-      id: 'sans',
-      name: '黑体（无衬线）',
-      doc: '微软雅黑',
-      sample: '永和九年，岁在癸丑，暮春之初',
-      stack: '"PingFang SC","Hiragino Sans GB","Microsoft YaHei",' +
-             '"Heiti SC",-apple-system,"Segoe UI",sans-serif'
     }
   ];
 
-  var DEFAULT_TYPO = {
-    font: 'lxgw',
-    size: 19,
-    lh: 1.95,
-    indent: false,
-    theme: 'light'
-  };
-
+  var DEFAULT_TYPO = { font: 'lxgw', size: 19, lh: 1.95, indent: false, theme: 'light' };
   var MIN_SIZE = 14, MAX_SIZE = 40;
-  var TYPO_KEY  = 'writer.typo.v2';
+  var TYPO_KEY = 'writer.typo.v2';
   var LOCAL_KEY = 'writer.local.v2';
+  var CLIENT_KEY = 'writer.clientId';
 
   /* ============================================================
-     ③ 元素引用
+     元素引用
      ============================================================ */
   var $ = function (id) { return document.getElementById(id); };
 
-  var editor       = $('editor');
-  var titleInput   = $('titleInput');
-  var counter      = $('counter');
-  var peersEl      = $('peers');
-  var scrim        = $('scrim');
-  var toastEl      = $('toast');
-  var themeColor   = $('themeColor');
+  var editor = $('editor'), titleInput = $('titleInput'), counter = $('counter');
+  var peersEl = $('peers'), scrim = $('scrim'), toastEl = $('toast'), themeColor = $('themeColor');
 
-  var sheetFont    = $('sheetFont');
-  var sheetComment = $('sheetComment');
-  var sheetShare   = $('sheetShare');
-  var sheetMenu    = $('sheetMenu');
+  var sheetFont = $('sheetFont'), sheetComment = $('sheetComment');
+  var sheetShare = $('sheetShare'), sheetMenu = $('sheetMenu');
 
-  var fontListEl   = $('fontList');
-  var rangeSize    = $('rangeSize');
-  var valSize      = $('valSize');
-  var rangeLh      = $('rangeLh');
-  var valLh        = $('valLh');
-  var swIndent     = $('swIndent');
-  var themeSeg     = $('themeSeg');
-  var tryBox       = $('tryBox');
+  var fontListEl = $('fontList'), rangeSize = $('rangeSize'), valSize = $('valSize');
+  var rangeLh = $('rangeLh'), valLh = $('valLh'), swIndent = $('swIndent');
+  var themeSeg = $('themeSeg');
 
-  var commentList  = $('commentList');
-  var composerSlot = $('composerSlot');
-  var commentCount = $('commentCount');
-  var commentBadge = $('commentBadge');
+  var commentList = $('commentList'), composerSlot = $('composerSlot');
+  var commentCount = $('commentCount'), commentBadge = $('commentBadge');
 
-  var shareStatus     = $('shareStatus');
-  var shareStatusText = $('shareStatusText');
-  var shareLinkWrap   = $('shareLinkWrap');
-  var shareLinkInput  = $('shareLinkInput');
-  var btnCopyLink     = $('btnCopyLink');
-  var btnCreateRoom   = $('btnCreateRoom');
-  var shareHint       = $('shareHint');
+  var shareStatus = $('shareStatus'), shareStatusText = $('shareStatusText');
+  var shareLinkWrap = $('shareLinkWrap'), shareLinkInput = $('shareLinkInput');
+  var btnCopyLink = $('btnCopyLink'), btnCreateRoom = $('btnCreateRoom');
+  var shareHint = $('shareHint');
 
-  var previewLayer = $('previewLayer');
-  var previewDoc   = $('previewDoc');
-  var fileInput    = $('fileInput');
-
+  var previewLayer = $('previewLayer'), previewDoc = $('previewDoc'), fileInput = $('fileInput');
   var activeSheet = null;
 
   /* ============================================================
-     ④ 排版设置
+     排版设置
      ============================================================ */
   var typo = Object.assign({}, DEFAULT_TYPO);
 
   function getFont(id) {
-    for (var i = 0; i < FONTS.length; i++) {
-      if (FONTS[i].id === id) return FONTS[i];
-    }
+    for (var i = 0; i < FONTS.length; i++) if (FONTS[i].id === id) return FONTS[i];
     return FONTS[0];
   }
 
@@ -1365,10 +1232,8 @@ input[type="range"].slider::-moz-range-thumb {
       var l = parseFloat(o.lh);
       if (!isNaN(l)) typo.lh = Math.min(2.8, Math.max(1.4, l));
       typo.indent = !!o.indent;
-      if (o.theme === 'light' || o.theme === 'dark' || o.theme === 'auto') {
-        typo.theme = o.theme;
-      }
-    } catch (e) { /* 忽略 */ }
+      if (o.theme === 'light' || o.theme === 'dark' || o.theme === 'auto') typo.theme = o.theme;
+    } catch (e) {}
   }
 
   function saveTypo() {
@@ -1378,8 +1243,7 @@ input[type="range"].slider::-moz-range-thumb {
   function resolveTheme() {
     if (typo.theme === 'auto') {
       return window.matchMedia &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches
-             ? 'dark' : 'light';
+             window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
     return typo.theme;
   }
@@ -1400,22 +1264,18 @@ input[type="range"].slider::-moz-range-thumb {
     swIndent.classList.toggle('on', typo.indent);
     swIndent.setAttribute('aria-checked', typo.indent ? 'true' : 'false');
 
-    /* 主题 */
     var t = resolveTheme();
     r.setAttribute('data-theme', t);
     themeColor.setAttribute('content', t === 'dark' ? '#17171A' : '#FCFAF6');
 
     var btns = themeSeg.querySelectorAll('button');
     for (var i = 0; i < btns.length; i++) {
-      btns[i].classList.toggle('on',
-        btns[i].getAttribute('data-theme-val') === typo.theme);
+      btns[i].classList.toggle('on', btns[i].getAttribute('data-theme-val') === typo.theme);
     }
 
-    /* 字体列表高亮 */
     var opts = fontListEl.querySelectorAll('.font-option');
     for (var j = 0; j < opts.length; j++) {
-      opts[j].classList.toggle('active',
-        opts[j].getAttribute('data-id') === typo.font);
+      opts[j].classList.toggle('active', opts[j].getAttribute('data-id') === typo.font);
     }
   }
 
@@ -1458,12 +1318,10 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   /* ============================================================
-     ⑤ 工具
+     工具
      ============================================================ */
   function esc(s) {
-    return String(s).replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;');
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   var toastTimer = null;
@@ -1471,25 +1329,18 @@ input[type="range"].slider::-moz-range-thumb {
     toastEl.textContent = msg;
     toastEl.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () {
-      toastEl.classList.remove('show');
-    }, 2200);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2200);
   }
 
   function pad2(n) { return n < 10 ? '0' + n : '' + n; }
-
   function stamp() {
     var d = new Date();
     return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) +
            '-' + pad2(d.getHours()) + pad2(d.getMinutes());
   }
-
   function randId(n) {
-    var chars = 'abcdefghijkmnpqrstuvwxyz23456789';
-    var s = '';
-    for (var i = 0; i < n; i++) {
-      s += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+    var c = 'abcdefghijkmnpqrstuvwxyz23456789', s = '';
+    for (var i = 0; i < n; i++) s += c.charAt(Math.floor(Math.random() * c.length));
     return s;
   }
 
@@ -1519,7 +1370,7 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   /* ============================================================
-     ⑥ Markdown 渲染（仅用于预览）
+     Markdown 渲染（仅用于预览与 Word 降级）
      ============================================================ */
   function inline(s) {
     return esc(s)
@@ -1537,9 +1388,7 @@ input[type="range"].slider::-moz-range-thumb {
     var lines = String(src).split(/\r?\n/);
     var out = '', inCode = false, buf = [], list = null;
 
-    function closeList() {
-      if (list) { out += '</' + list + '>'; list = null; }
-    }
+    function closeList() { if (list) { out += '</' + list + '>'; list = null; } }
 
     for (var i = 0; i < lines.length; i++) {
       var L = lines[i], m;
@@ -1555,77 +1404,49 @@ input[type="range"].slider::-moz-range-thumb {
       if (!L.trim()) { closeList(); continue; }
 
       m = L.match(/^(#{1,6})\s+(.*)$/);
-      if (m) {
-        closeList();
-        var h = m[1].length;
-        out += '<h' + h + '>' + inline(m[2]) + '</h' + h + '>';
-        continue;
-      }
+      if (m) { closeList(); var h = m[1].length; out += '<h' + h + '>' + inline(m[2]) + '</h' + h + '>'; continue; }
 
-      if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(L)) {
-        closeList(); out += '<hr>'; continue;
-      }
+      if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(L)) { closeList(); out += '<hr>'; continue; }
 
       m = L.match(/^\s*[-*+]\s+(.*)$/);
       if (m) {
         if (list !== 'ul') { closeList(); out += '<ul>'; list = 'ul'; }
-        out += '<li>' + inline(m[1]) + '</li>';
-        continue;
+        out += '<li>' + inline(m[1]) + '</li>'; continue;
       }
 
       m = L.match(/^\s*\d+[.)]\s+(.*)$/);
       if (m) {
         if (list !== 'ol') { closeList(); out += '<ol>'; list = 'ol'; }
-        out += '<li>' + inline(m[1]) + '</li>';
-        continue;
+        out += '<li>' + inline(m[1]) + '</li>'; continue;
       }
 
       m = L.match(/^\s*>\s?(.*)$/);
-      if (m) {
-        closeList();
-        out += '<blockquote>' + inline(m[1]) + '</blockquote>';
-        continue;
-      }
+      if (m) { closeList(); out += '<blockquote>' + inline(m[1]) + '</blockquote>'; continue; }
 
       closeList();
       out += '<p>' + inline(L) + '</p>';
     }
-
     if (inCode) out += '<pre><code>' + esc(buf.join('\n')) + '</code></pre>';
     closeList();
     return out;
   }
 
   /* ============================================================
-     ⑦ 编辑器状态
+     编辑器状态
      ============================================================ */
-  var state = {
-    title: '',
-    content: '',
-    comments: [],
-    room: '',
-    online: false,
-    selfId: '',
-    selfName: '',
-    selfColor: '',
-    peers: []
-  };
-
+  var state = { title: '', comments: [], room: '', online: false,
+                selfId: '', selfName: '', selfColor: '', peers: [] };
   var saveTimer = null;
 
   function countText() {
-    var t = editor.value;
-    var n = t.replace(/\s/g, '').length;
-    counter.textContent = n + ' 字';
+    counter.textContent = editor.value.replace(/\s/g, '').length + ' 字';
   }
 
   function persistLocal() {
-    if (state.room) return;   /* 协作模式下由服务端存储 */
+    if (state.room) return;
     try {
       localStorage.setItem(LOCAL_KEY, JSON.stringify({
-        title: titleInput.value,
-        content: editor.value,
-        savedAt: Date.now()
+        title: titleInput.value, content: editor.value, savedAt: Date.now()
       }));
     } catch (e) {}
   }
@@ -1636,21 +1457,11 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   /* ============================================================
-     ⑧ 协作：WebSocket / BroadcastChannel
+     协作
      ============================================================ */
-  var collab = {
-    ws: null,
-    bc: null,
-    local: false,
-    ready: false,
-    suppress: false,
-    pushTimer: null,
-    reconnectTimer: null,
-    retry: 0
-  };
-
-  var COLORS = ['#4A8B6F', '#C2873F', '#5B7FBF', '#B3618A',
-                '#8A7BC8', '#4F9BA8', '#C2604F', '#7E9B4A'];
+  var collab = { ws: null, bc: null, local: false, ready: false,
+                 suppress: false, pushTimer: null, reconnectTimer: null, retry: 0 };
+  var COLORS = ['#4A8B6F','#C2873F','#5B7FBF','#B3618A','#8A7BC8','#4F9BA8','#C2604F','#7E9B4A'];
 
   function pickColor(id) {
     var h = 0;
@@ -1661,48 +1472,26 @@ input[type="range"].slider::-moz-range-thumb {
   function initSelf() {
     var id;
     try {
-      id = localStorage.getItem('writer.clientId');
-      if (!id) {
-        id = randId(8);
-        localStorage.setItem('writer.clientId', id);
-      }
+      id = localStorage.getItem(CLIENT_KEY);
+      if (!id) { id = randId(8); localStorage.setItem(CLIENT_KEY, id); }
     } catch (e) { id = randId(8); }
     state.selfId = id;
     state.selfColor = pickColor(id);
     state.selfName = '访客' + id.slice(-3).toUpperCase();
   }
 
-  /* ---- 推送本地内容到协作通道 ---- */
   function pushContent() {
     if (!collab.ready) return;
-
-    var payload = {
-      type: 'text',
-      content: editor.value,
-      from: state.selfId
-    };
-
-    if (collab.local) {
-      if (collab.bc) collab.bc.postMessage(payload);
-    } else if (collab.ws && collab.ws.readyState === 1) {
-      collab.ws.send(JSON.stringify(payload));
-    }
+    var payload = { type: 'text', content: editor.value, from: state.selfId };
+    if (collab.local) { if (collab.bc) collab.bc.postMessage(payload); }
+    else if (collab.ws && collab.ws.readyState === 1) collab.ws.send(JSON.stringify(payload));
   }
 
   function pushTitle() {
     if (!collab.ready) return;
-
-    var payload = {
-      type: 'title',
-      title: titleInput.value,
-      from: state.selfId
-    };
-
-    if (collab.local) {
-      if (collab.bc) collab.bc.postMessage(payload);
-    } else if (collab.ws && collab.ws.readyState === 1) {
-      collab.ws.send(JSON.stringify(payload));
-    }
+    var payload = { type: 'title', title: titleInput.value, from: state.selfId };
+    if (collab.local) { if (collab.bc) collab.bc.postMessage(payload); }
+    else if (collab.ws && collab.ws.readyState === 1) collab.ws.send(JSON.stringify(payload));
   }
 
   function schedulePush() {
@@ -1711,33 +1500,21 @@ input[type="range"].slider::-moz-range-thumb {
     collab.pushTimer = setTimeout(pushContent, 260);
   }
 
-  /* ---- 远端文本落地，尽量保住光标位置 ---- */
   function applyRemoteText(text) {
     if (text === editor.value) return;
-
     var old = editor.value;
     var pos = editor.selectionStart;
     var focused = document.activeElement === editor;
-
-    /* 公共前缀长度 */
-    var p = 0;
-    var maxP = Math.min(old.length, text.length);
+    var p = 0, maxP = Math.min(old.length, text.length);
     while (p < maxP && old.charCodeAt(p) === text.charCodeAt(p)) p++;
-
     var newPos = pos <= p ? pos : Math.max(p, pos + (text.length - old.length));
     newPos = Math.min(newPos, text.length);
-
     editor.value = text;
-
-    if (focused) {
-      try { editor.setSelectionRange(newPos, newPos); } catch (e) {}
-    }
-
+    if (focused) { try { editor.setSelectionRange(newPos, newPos); } catch (e) {} }
     countText();
     persistLocal();
   }
 
-  /* ---- 消息处理 ---- */
   function handleMessage(msg) {
     if (!msg || typeof msg !== 'object') return;
 
@@ -1746,7 +1523,6 @@ input[type="range"].slider::-moz-range-thumb {
       state.selfId = msg.clientId || state.selfId;
       state.selfColor = pickColor(state.selfId);
       state.selfName = msg.selfName || state.selfName;
-
       if (msg.doc) {
         collab.suppress = true;
         if (typeof msg.doc.title === 'string') titleInput.value = msg.doc.title;
@@ -1756,102 +1532,73 @@ input[type="range"].slider::-moz-range-thumb {
         countText();
         renderComments();
       }
-
-      if (Array.isArray(msg.peers)) {
-        state.peers = msg.peers;
-        renderPeers();
-      }
+      if (Array.isArray(msg.peers)) { state.peers = msg.peers; renderPeers(); }
       updateSharePanel();
       return;
     }
 
     if (msg.type === 'text') {
-      if (msg.from === state.selfId) return;
-      if (collab.suppress) return;
+      if (msg.from === state.selfId || collab.suppress) return;
       applyRemoteText(String(msg.content || ''));
       return;
     }
 
     if (msg.type === 'title') {
-      if (msg.from === state.selfId) return;
-      if (collab.suppress) return;
+      if (msg.from === state.selfId || collab.suppress) return;
       var t = String(msg.title || '');
-      if (t !== titleInput.value) {
-        titleInput.value = t;
-        if (document.activeElement !== titleInput) { /* 不打扰输入 */ }
-      }
+      if (t !== titleInput.value && document.activeElement !== titleInput) titleInput.value = t;
       return;
     }
 
     if (msg.type === 'peers') {
       state.peers = Array.isArray(msg.peers) ? msg.peers : [];
-      renderPeers();
-      updateSharePanel();
+      renderPeers(); updateSharePanel();
       return;
     }
 
-    if (msg.type === 'comment:add') {
-      if (msg.comment) {
-        var exist = false;
-        for (var i = 0; i < state.comments.length; i++) {
-          if (state.comments[i].id === msg.comment.id) { exist = true; break; }
-        }
-        if (!exist) state.comments.push(msg.comment);
-        renderComments();
-        if (msg.comment.clientId !== state.selfId) {
-          toast(msg.comment.author + ' 添加了一条批注');
-        }
+    if (msg.type === 'comment:add' && msg.comment) {
+      var exist = false;
+      for (var i = 0; i < state.comments.length; i++) {
+        if (state.comments[i].id === msg.comment.id) { exist = true; break; }
+      }
+      if (!exist) state.comments.push(msg.comment);
+      renderComments();
+      if (msg.comment.clientId !== state.selfId) {
+        toast((msg.comment.author || '有人') + ' 添加了一条批注');
       }
       return;
     }
 
-    if (msg.type === 'comment:update') {
+    if (msg.type === 'comment:update' && msg.comment) {
       for (var j = 0; j < state.comments.length; j++) {
-        if (state.comments[j].id === msg.comment.id) {
-          state.comments[j] = msg.comment;
-          break;
-        }
+        if (state.comments[j].id === msg.comment.id) { state.comments[j] = msg.comment; break; }
       }
       renderComments();
       return;
     }
 
     if (msg.type === 'comment:delete') {
-      state.comments = state.comments.filter(function (c) {
-        return c.id !== msg.id;
-      });
+      state.comments = state.comments.filter(function (c) { return c.id !== msg.id; });
       renderComments();
       return;
     }
   }
 
-  /* ---- 本地模式：BroadcastChannel ---- */
   function connectLocal(room) {
     if (typeof BroadcastChannel === 'undefined') {
       toast('当前浏览器不支持本地协作演示');
       return;
     }
-
     collab.local = true;
-
-    try {
-      collab.bc = new BroadcastChannel('writer-room-' + room);
-    } catch (e) {
-      toast('无法建立本地协作通道');
-      return;
-    }
+    try { collab.bc = new BroadcastChannel('writer-room-' + room); }
+    catch (e) { toast('无法建立本地协作通道'); return; }
 
     collab.bc.onmessage = function (e) {
       var msg = e.data;
       if (!msg || msg.from === state.selfId) return;
       if (msg.type === 'hello') {
-        /* 新加入的标签页索要当前内容 */
-        collab.bc.postMessage({
-          type: 'text', content: editor.value, from: state.selfId
-        });
-        collab.bc.postMessage({
-          type: 'title', title: titleInput.value, from: state.selfId
-        });
+        collab.bc.postMessage({ type: 'text', content: editor.value, from: state.selfId });
+        collab.bc.postMessage({ type: 'title', title: titleInput.value, from: state.selfId });
         return;
       }
       handleMessage(msg);
@@ -1859,26 +1606,20 @@ input[type="range"].slider::-moz-range-thumb {
 
     collab.ready = true;
     collab.bc.postMessage({ type: 'hello', from: state.selfId });
-
     state.peers = [{ id: state.selfId, name: state.selfName + '（本机）' }];
     renderPeers();
     updateSharePanel();
   }
 
-  /* ---- 服务端模式 ---- */
   function connectServer(room) {
     var base = CONFIG.SERVER.replace(/\/+$/, '');
     var wsUrl = base.replace(/^http/, 'ws') +
                 '/ws?room=' + encodeURIComponent(room) +
                 '&name=' + encodeURIComponent(state.selfName);
-
     collab.local = false;
 
     var ws;
-    try { ws = new WebSocket(wsUrl); } catch (e) {
-      toast('无法连接协作服务器');
-      return;
-    }
+    try { ws = new WebSocket(wsUrl); } catch (e) { toast('无法连接协作服务器'); return; }
     collab.ws = ws;
 
     ws.onopen = function () {
@@ -1898,7 +1639,6 @@ input[type="range"].slider::-moz-range-thumb {
       collab.ready = false;
       state.online = false;
       updateSharePanel();
-
       if (state.room && collab.retry < 6) {
         collab.retry++;
         clearTimeout(collab.reconnectTimer);
@@ -1907,8 +1647,7 @@ input[type="range"].slider::-moz-range-thumb {
         }, 1200 * collab.retry);
       }
     };
-
-    ws.onerror = function () { /* onclose 会接手 */ };
+    ws.onerror = function () {};
   }
 
   function connectRoom(room) {
@@ -1919,37 +1658,23 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   function disconnectRoom(silent) {
-    if (collab.bc) {
-      try { collab.bc.close(); } catch (e) {}
-      collab.bc = null;
-    }
-    if (collab.ws) {
-      try { collab.ws.close(); } catch (e) {}
-      collab.ws = null;
-    }
+    if (collab.bc) { try { collab.bc.close(); } catch (e) {} collab.bc = null; }
+    if (collab.ws) { try { collab.ws.close(); } catch (e) {} collab.ws = null; }
     clearTimeout(collab.reconnectTimer);
     collab.ready = false;
     state.online = false;
-    if (!silent) {
-      state.room = '';
-      state.peers = [];
-      renderPeers();
-    }
+    if (!silent) { state.room = ''; state.peers = []; renderPeers(); }
   }
 
-  /* ---- 在线头像 ---- */
   function renderPeers() {
     var list = state.peers || [];
-
     if (!state.room || list.length === 0) {
       peersEl.classList.remove('show');
       peersEl.innerHTML = '';
       return;
     }
-
     peersEl.innerHTML = '';
-    var show = list.slice(0, 4);
-    show.forEach(function (p) {
+    list.slice(0, 4).forEach(function (p) {
       var d = document.createElement('span');
       d.className = 'peer-dot';
       d.style.background = pickColor(p.id || 'x');
@@ -1957,7 +1682,6 @@ input[type="range"].slider::-moz-range-thumb {
       d.title = p.name || '';
       peersEl.appendChild(d);
     });
-
     if (list.length > 4) {
       var more = document.createElement('span');
       more.className = 'peer-dot';
@@ -1965,73 +1689,44 @@ input[type="range"].slider::-moz-range-thumb {
       more.textContent = '+' + (list.length - 4);
       peersEl.appendChild(more);
     }
-
     peersEl.classList.add('show');
   }
 
   /* ============================================================
-     ⑨ 批注
+     批注
      ============================================================ */
   function sendComment(quote, text) {
     var payload = {
-      type: 'comment:add',
-      from: state.selfId,
+      type: 'comment:add', from: state.selfId,
       comment: { quote: quote, text: text, name: state.selfName }
     };
-
     if (!collab.ready) {
-      /* 未开协作：本地记录 */
       state.comments.push({
-        id: randId(10),
-        quote: quote,
-        text: text,
-        author: state.selfName,
-        clientId: state.selfId,
-        resolved: false,
-        createdAt: Date.now()
+        id: randId(10), quote: quote, text: text, author: state.selfName,
+        clientId: state.selfId, resolved: false, createdAt: Date.now()
       });
       renderComments();
       toast('已添加批注（本地）');
       return;
     }
-
-    if (collab.local) {
-      if (collab.bc) collab.bc.postMessage(payload);
-    } else if (collab.ws && collab.ws.readyState === 1) {
-      collab.ws.send(JSON.stringify(payload));
-    }
+    if (collab.local) { if (collab.bc) collab.bc.postMessage(payload); }
+    else if (collab.ws && collab.ws.readyState === 1) collab.ws.send(JSON.stringify(payload));
   }
 
   function resolveComment(id, resolved) {
     var payload = { type: 'comment:resolve', id: id, resolved: resolved, from: state.selfId };
-
-    if (collab.local) {
-      if (collab.bc) collab.bc.postMessage(payload);
-    } else if (collab.ws && collab.ws.readyState === 1) {
-      collab.ws.send(JSON.stringify(payload));
-      return;
-    }
-
-    /* 本地模式同步更新自己 */
+    if (collab.local) { if (collab.bc) collab.bc.postMessage(payload); }
+    else if (collab.ws && collab.ws.readyState === 1) { collab.ws.send(JSON.stringify(payload)); return; }
     for (var i = 0; i < state.comments.length; i++) {
-      if (state.comments[i].id === id) {
-        state.comments[i].resolved = resolved;
-        break;
-      }
+      if (state.comments[i].id === id) { state.comments[i].resolved = resolved; break; }
     }
     renderComments();
   }
 
   function deleteComment(id) {
     var payload = { type: 'comment:delete', id: id, from: state.selfId };
-
-    if (collab.local) {
-      if (collab.bc) collab.bc.postMessage(payload);
-    } else if (collab.ws && collab.ws.readyState === 1) {
-      collab.ws.send(JSON.stringify(payload));
-      return;
-    }
-
+    if (collab.local) { if (collab.bc) collab.bc.postMessage(payload); }
+    else if (collab.ws && collab.ws.readyState === 1) { collab.ws.send(JSON.stringify(payload)); return; }
     state.comments = state.comments.filter(function (c) { return c.id !== id; });
     renderComments();
   }
@@ -2040,8 +1735,9 @@ input[type="range"].slider::-moz-range-thumb {
     if (!ts) return '';
     var d = new Date(ts);
     var now = new Date();
-    var sameDay = d.toDateString() === now.toDateString();
-    if (sameDay) return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+    if (d.toDateString() === now.toDateString()) {
+      return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+    }
     return (d.getMonth() + 1) + '月' + d.getDate() + '日';
   }
 
@@ -2049,8 +1745,7 @@ input[type="range"].slider::-moz-range-thumb {
     var open = state.comments.filter(function (c) { return !c.resolved; });
 
     commentCount.textContent = state.comments.length
-      ? open.length + ' 条待处理 / 共 ' + state.comments.length + ' 条'
-      : '';
+      ? open.length + ' 条待处理 / 共 ' + state.comments.length + ' 条' : '';
 
     if (open.length > 0) {
       commentBadge.textContent = open.length > 99 ? '99+' : open.length;
@@ -2115,7 +1810,6 @@ input[type="range"].slider::-moz-range-thumb {
           closeSheet();
           editor.focus();
           editor.setSelectionRange(idx, idx + c.quote.length);
-          /* 滚动到可见 */
           var ratio = idx / Math.max(1, editor.value.length);
           editor.scrollTop = ratio * (editor.scrollHeight - editor.clientHeight);
         });
@@ -2126,9 +1820,7 @@ input[type="range"].slider::-moz-range-thumb {
       rBtn.type = 'button';
       rBtn.className = 'mini-btn';
       rBtn.textContent = c.resolved ? '重新打开' : '标记已解决';
-      rBtn.addEventListener('click', function () {
-        resolveComment(c.id, !c.resolved);
-      });
+      rBtn.addEventListener('click', function () { resolveComment(c.id, !c.resolved); });
       meta.appendChild(rBtn);
 
       if (c.clientId === state.selfId) {
@@ -2149,10 +1841,8 @@ input[type="range"].slider::-moz-range-thumb {
     });
   }
 
-  /* 打开批注面板时，如果编辑器有选区则显示输入框 */
   function openCommentSheet() {
     composerSlot.innerHTML = '';
-
     var sel = '';
     if (document.activeElement === editor) {
       sel = editor.value.substring(editor.selectionStart, editor.selectionEnd);
@@ -2176,9 +1866,7 @@ input[type="range"].slider::-moz-range-thumb {
       cancel.type = 'button';
       cancel.className = 'mini-btn';
       cancel.textContent = '取消';
-      cancel.addEventListener('click', function () {
-        composerSlot.innerHTML = '';
-      });
+      cancel.addEventListener('click', function () { composerSlot.innerHTML = ''; });
 
       var send = document.createElement('button');
       send.type = 'button';
@@ -2195,12 +1883,10 @@ input[type="range"].slider::-moz-range-thumb {
 
       actions.appendChild(cancel);
       actions.appendChild(send);
-
       box.appendChild(q);
       box.appendChild(ta);
       box.appendChild(actions);
       composerSlot.appendChild(box);
-
       setTimeout(function () { ta.focus(); }, 320);
     }
 
@@ -2209,7 +1895,7 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   /* ============================================================
-     ⑩ 面板控制
+     面板控制
      ============================================================ */
   function openSheet(el) {
     closeSheet();
@@ -2219,17 +1905,13 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   function closeSheet() {
-    if (activeSheet) {
-      activeSheet.classList.remove('show');
-      activeSheet = null;
-    }
+    if (activeSheet) { activeSheet.classList.remove('show'); activeSheet = null; }
     scrim.classList.remove('show');
   }
 
   function updateSharePanel() {
     var online = collab.ready;
     var n = (state.peers || []).length;
-
     shareStatus.classList.toggle('online', online);
 
     if (!state.room) {
@@ -2246,17 +1928,9 @@ input[type="range"].slider::-moz-range-thumb {
       shareLinkInput.value = buildShareUrl();
     }
 
-    if (CONFIG.SERVER) {
-      shareHint.innerHTML =
-        '链接有效期与你的服务器存储策略一致。' +
-        '打开链接的人可以实时看到你的输入，并添加批注。';
-    } else {
-      shareHint.innerHTML =
-        '当前为<strong>本地演示模式</strong>：' +
-        '同一浏览器的多个标签页之间可以实时同步，用于体验协作效果。' +
-        '要让朋友真的打开链接进来，需要部署后端，' +
-        '然后把 <code>CONFIG.SERVER</code> 填成你的服务器地址。';
-    }
+    shareHint.innerHTML = CONFIG.SERVER
+      ? '链接有效期与你的服务器存储策略一致。打开链接的人可以实时看到你的输入，并添加批注。'
+      : '当前为<strong>本地演示模式</strong>：同一浏览器的多个标签页之间可以实时同步，用于体验协作效果。';
   }
 
   function buildShareUrl() {
@@ -2268,12 +1942,9 @@ input[type="range"].slider::-moz-range-thumb {
 
   function createRoom() {
     var room = randId(10);
-
-    /* 有后端时先让服务端建档，无后端就直接本地开房 */
     if (CONFIG.SERVER) {
       var base = CONFIG.SERVER.replace(/\/+$/, '');
-      fetch(base + '/api/doc/' + room, { method: 'GET' })
-        .catch(function () { /* 忽略，连接时也会建档 */ })
+      fetch(base + '/api/doc/' + room, { method: 'GET' }).catch(function () {})
         .then(function () {
           connectRoom(room);
           updateSharePanel();
@@ -2281,26 +1952,30 @@ input[type="range"].slider::-moz-range-thumb {
         });
       return;
     }
-
     connectRoom(room);
     updateSharePanel();
     afterRoomReady(room);
   }
 
   function afterRoomReady(room) {
-    /* 把房间号写进地址栏，刷新不丢 */
     try {
       var u = new URL(window.location.href);
       u.searchParams.set('room', room);
       history.replaceState(null, '', u.toString());
     } catch (e) {}
-
     toast('协作已开启，把链接发给朋友吧');
   }
 
   /* ============================================================
-     ⑪ Word 导出
+     Word 导出
      ============================================================ */
+  function bodyPt() {
+    return Math.round(Math.min(16, Math.max(10.5, typo.size * 0.62)) * 2);
+  }
+  function lineTwips() {
+    return Math.round(360 * typo.lh * (typo.size / 19));
+  }
+
   function parseRuns(text, base) {
     var docx = window.docx;
     var fontName = getFont(typo.font).doc;
@@ -2309,17 +1984,9 @@ input[type="range"].slider::-moz-range-thumb {
     var last = 0, m;
 
     function mk(t, extra) {
-      var o = {
-        text: t,
-        font: fontName,
-        size: (base && base.size) || bodyPt()
-      };
-      if (base) {
-        for (var k in base) if (k !== 'size') o[k] = base[k];
-      }
-      if (extra) {
-        for (var k2 in extra) o[k2] = extra[k2];
-      }
+      var o = { text: t, font: fontName, size: (base && base.size) || bodyPt() };
+      if (base) { for (var k in base) if (k !== 'size') o[k] = base[k]; }
+      if (extra) { for (var k2 in extra) o[k2] = extra[k2]; }
       return new docx.TextRun(o);
     }
 
@@ -2337,26 +2004,14 @@ input[type="range"].slider::-moz-range-thumb {
     return runs;
   }
 
-  /* 页面字号 → Word 磅值（半磅为单位） */
-  function bodyPt() {
-    return Math.round(Math.min(16, Math.max(10.5, typo.size * 0.62)) * 2);
-  }
-
-  function lineTwips() {
-    return Math.round(360 * typo.lh * (typo.size / 19));
-  }
-
   function buildDocx(text, title) {
     var docx = window.docx;
-    var P = docx.Paragraph;
-    var HL = docx.HeadingLevel;
+    var P = docx.Paragraph, HL = docx.HeadingLevel;
     var fontName = getFont(typo.font).doc;
     var lines = String(text).split(/\r?\n/);
-    var kids = [];
-    var inCode = false, buf = [];
+    var kids = [], inCode = false, buf = [];
     var pt = bodyPt(), lt = lineTwips();
 
-    /* 标题 */
     if (title && title.trim()) {
       kids.push(new P({
         children: [new docx.TextRun({
@@ -2373,11 +2028,8 @@ input[type="range"].slider::-moz-range-thumb {
         if (inCode) {
           buf.forEach(function (cl) {
             kids.push(new P({
-              children: [new docx.TextRun({
-                text: cl || ' ', font: 'Consolas', size: 20
-              })],
-              spacing: { line: 260 },
-              shading: { fill: 'F5F5F5' }
+              children: [new docx.TextRun({ text: cl || ' ', font: 'Consolas', size: 20 })],
+              spacing: { line: 260 }, shading: { fill: 'F5F5F5' }
             }));
           });
           buf = []; inCode = false;
@@ -2386,16 +2038,12 @@ input[type="range"].slider::-moz-range-thumb {
       }
       if (inCode) { buf.push(L); continue; }
 
-      if (!L.trim()) {
-        kids.push(new P({ children: [], spacing: { after: 120 } }));
-        continue;
-      }
+      if (!L.trim()) { kids.push(new P({ children: [], spacing: { after: 120 } })); continue; }
 
       m = L.match(/^(#{1,6})\s+(.*)$/);
       if (m) {
         var lv = m[1].length;
-        var lvls = [HL.HEADING_1, HL.HEADING_2, HL.HEADING_3,
-                    HL.HEADING_4, HL.HEADING_5, HL.HEADING_6];
+        var lvls = [HL.HEADING_1, HL.HEADING_2, HL.HEADING_3, HL.HEADING_4, HL.HEADING_5, HL.HEADING_6];
         kids.push(new P({
           heading: lvls[lv - 1],
           children: parseRuns(m[2], { size: lv === 1 ? 36 : (lv === 2 ? 30 : 26) }),
@@ -2415,21 +2063,15 @@ input[type="range"].slider::-moz-range-thumb {
 
       m = L.match(/^\s*[-*+]\s+(.*)$/);
       if (m) {
-        kids.push(new P({
-          bullet: { level: 0 },
-          children: parseRuns(m[1]),
-          spacing: { after: 80, line: lt }
-        }));
+        kids.push(new P({ bullet: { level: 0 }, children: parseRuns(m[1]),
+                          spacing: { after: 80, line: lt } }));
         continue;
       }
 
       m = L.match(/^\s*\d+[.)]\s+(.*)$/);
       if (m) {
-        kids.push(new P({
-          numbering: { reference: 'ol', level: 0 },
-          children: parseRuns(m[1]),
-          spacing: { after: 80, line: lt }
-        }));
+        kids.push(new P({ numbering: { reference: 'ol', level: 0 },
+                          children: parseRuns(m[1]), spacing: { after: 80, line: lt } }));
         continue;
       }
 
@@ -2444,10 +2086,7 @@ input[type="range"].slider::-moz-range-thumb {
         continue;
       }
 
-      var opts = {
-        children: parseRuns(L),
-        spacing: { after: 160, line: lt }
-      };
+      var opts = { children: parseRuns(L), spacing: { after: 160, line: lt } };
       if (typo.indent) opts.indent = { firstLine: Math.round(pt * 20) };
       kids.push(new P(opts));
     }
@@ -2464,10 +2103,7 @@ input[type="range"].slider::-moz-range-thumb {
         }
       },
       numbering: {
-        config: [{
-          reference: 'ol',
-          levels: [{ level: 0, format: 'decimal', text: '%1.', alignment: 'start' }]
-        }]
+        config: [{ reference: 'ol', levels: [{ level: 0, format: 'decimal', text: '%1.', alignment: 'start' }] }]
       },
       sections: [{
         properties: {
@@ -2502,10 +2138,8 @@ input[type="range"].slider::-moz-range-thumb {
       'pre{background:#f5f5f5;padding:10px;font-family:Consolas,monospace;font-size:10.5pt}' +
       'code{font-family:Consolas,monospace;background:#f1f3ee;padding:1px 3px}' +
       'hr{border:0;border-top:1px solid #ddd8ce}</style></head><body>' +
-      (title && title.trim()
-        ? '<h1 style="font-size:18pt">' + esc(title.trim()) + '</h1>' : '') +
-      md(text) +
-      '</body></html>';
+      (title && title.trim() ? '<h1 style="font-size:18pt">' + esc(title.trim()) + '</h1>' : '') +
+      md(text) + '</body></html>';
 
     return {
       blob: new Blob(['\ufeff', html], { type: 'application/msword' }),
@@ -2516,13 +2150,10 @@ input[type="range"].slider::-moz-range-thumb {
   function buildWordFile(text, title) {
     var filename = (title && title.trim() ? title.trim().slice(0, 30) : '未命名') +
                    '-' + stamp() + '.docx';
-
     if (window.docx && window.docx.Packer) {
       return buildDocx(text, title).then(function (blob) {
         return { blob: blob, filename: filename };
-      }).catch(function () {
-        return buildLegacyDoc(text, title, filename);
-      });
+      }).catch(function () { return buildLegacyDoc(text, title, filename); });
     }
     return Promise.resolve(buildLegacyDoc(text, title, filename));
   }
@@ -2530,8 +2161,7 @@ input[type="range"].slider::-moz-range-thumb {
   function downloadBlob(blob, filename) {
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
+    a.href = url; a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -2541,68 +2171,47 @@ input[type="range"].slider::-moz-range-thumb {
   function exportWord() {
     var text = editor.value;
     if (!text.trim()) { toast('还没有内容可以导出'); return; }
-
     toast('正在生成 Word…');
     buildWordFile(text, titleInput.value).then(function (r) {
       downloadBlob(r.blob, r.filename);
       toast('已导出 ' + r.filename);
-    }).catch(function () {
-      toast('导出失败，请重试');
-    });
+    }).catch(function () { toast('导出失败，请重试'); });
   }
 
   /* ============================================================
-     ⑫ 导入 / 复制 / 清空
+     导入 / 复制 / 清空
      ============================================================ */
   function readFile(file) {
     if (!file) return;
-
     var name = (file.name || '').toLowerCase();
     var isText = /\.(txt|md|markdown|text|json|csv|html?|xml|log|js|css)$/.test(name) ||
                  (file.type && file.type.indexOf('text') === 0);
-
-    if (!isText) {
-      if (!confirm('“' + file.name + '”可能不是纯文本，仍要尝试读取吗？')) return;
-    }
+    if (!isText && !confirm('“' + file.name + '”可能不是纯文本，仍要尝试读取吗？')) return;
 
     var reader = new FileReader();
-
     reader.onload = function () {
       var c = String(reader.result || '');
-
       if (editor.value.trim()) {
-        var append = confirm(
-          '已载入：' + file.name + '\n\n' +
-          '「确定」= 追加到末尾\n「取消」= 替换当前内容'
-        );
-        editor.value = append
-          ? editor.value.replace(/\s*$/, '') + '\n\n' + c
-          : c;
+        var append = confirm('已载入：' + file.name + '\n\n「确定」= 追加到末尾\n「取消」= 替换当前内容');
+        editor.value = append ? editor.value.replace(/\s*$/, '') + '\n\n' + c : c;
       } else {
         editor.value = c;
       }
-
       countText();
       scheduleLocalSave();
       schedulePush();
       editor.scrollTop = 0;
       toast('已载入：' + file.name);
     };
-
     reader.onerror = function () { toast('读取失败，请重试'); };
     reader.readAsText(file, 'UTF-8');
   }
 
   /* ============================================================
-     ⑬ 事件绑定
+     事件绑定
      ============================================================ */
-  /* ---- 编辑器 ---- */
-  var pushThrottle = null;
-
   editor.addEventListener('input', function () {
-    countText();
-    scheduleLocalSave();
-    schedulePush();
+    countText(); scheduleLocalSave(); schedulePush();
   });
 
   editor.addEventListener('keydown', function (e) {
@@ -2611,13 +2220,10 @@ input[type="range"].slider::-moz-range-thumb {
       var s = this.selectionStart, t = this.selectionEnd;
       this.value = this.value.slice(0, s) + '  ' + this.value.slice(t);
       this.selectionStart = this.selectionEnd = s + 2;
-      countText();
-      scheduleLocalSave();
-      schedulePush();
+      countText(); scheduleLocalSave(); schedulePush();
     }
   });
 
-  /* 移动端：输入时把光标滚到可见区域 */
   editor.addEventListener('focus', function () {
     setTimeout(function () {
       var len = editor.value.length;
@@ -2625,50 +2231,27 @@ input[type="range"].slider::-moz-range-thumb {
     }, 60);
   });
 
-  /* ---- 标题 ---- */
+  var pushThrottle = null;
   titleInput.addEventListener('input', function () {
     scheduleLocalSave();
     clearTimeout(pushThrottle);
     pushThrottle = setTimeout(pushTitle, 300);
   });
 
-  /* ---- 底部工具 ---- */
-  $('toolFont').addEventListener('click', function () {
-    openSheet(sheetFont);
-  });
-
+  $('toolFont').addEventListener('click', function () { openSheet(sheetFont); });
   $('toolComment').addEventListener('click', openCommentSheet);
-
-  $('toolShare').addEventListener('click', function () {
-    updateSharePanel();
-    openSheet(sheetShare);
-  });
-
+  $('toolShare').addEventListener('click', function () { updateSharePanel(); openSheet(sheetShare); });
   $('toolExport').addEventListener('click', exportWord);
+  $('btnShareTop').addEventListener('click', function () { updateSharePanel(); openSheet(sheetShare); });
+  $('btnMenu').addEventListener('click', function () { openSheet(sheetMenu); });
 
-  $('btnShareTop').addEventListener('click', function () {
-    updateSharePanel();
-    openSheet(sheetShare);
-  });
-
-  $('btnMenu').addEventListener('click', function () {
-    openSheet(sheetMenu);
-  });
-
-  /* ---- 关闭 ---- */
   scrim.addEventListener('click', closeSheet);
-
   var closers = document.querySelectorAll('[data-close]');
-  for (var ci = 0; ci < closers.length; ci++) {
-    closers[ci].addEventListener('click', closeSheet);
-  }
+  for (var ci = 0; ci < closers.length; ci++) closers[ci].addEventListener('click', closeSheet);
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
-      if (previewLayer.classList.contains('show')) {
-        previewLayer.classList.remove('show');
-        return;
-      }
+      if (previewLayer.classList.contains('show')) { previewLayer.classList.remove('show'); return; }
       closeSheet();
       return;
     }
@@ -2680,33 +2263,26 @@ input[type="range"].slider::-moz-range-thumb {
     }
   });
 
-  /* ---- 设置面板 ---- */
   rangeSize.addEventListener('input', function () {
     typo.size = parseInt(this.value, 10) || DEFAULT_TYPO.size;
-    applyTypo();
-    saveTypo();
+    applyTypo(); saveTypo();
   });
-
   $('sizeMinus').addEventListener('click', function () {
     typo.size = Math.max(MIN_SIZE, typo.size - 1);
     applyTypo(); saveTypo();
   });
-
   $('sizePlus').addEventListener('click', function () {
     typo.size = Math.min(MAX_SIZE, typo.size + 1);
     applyTypo(); saveTypo();
   });
-
   rangeLh.addEventListener('input', function () {
     typo.lh = parseFloat(this.value) || DEFAULT_TYPO.lh;
     applyTypo(); saveTypo();
   });
-
   swIndent.addEventListener('click', function () {
     typo.indent = !typo.indent;
     applyTypo(); saveTypo();
   });
-
   themeSeg.addEventListener('click', function (e) {
     var b = e.target.closest('button');
     if (!b) return;
@@ -2715,14 +2291,12 @@ input[type="range"].slider::-moz-range-thumb {
     typo.theme = v;
     applyTypo(); saveTypo();
   });
-
   $('btnResetTypo').addEventListener('click', function () {
     typo = Object.assign({}, DEFAULT_TYPO);
     applyTypo(); saveTypo();
     toast('已恢复默认设置');
   });
 
-  /* 跟随系统主题变化 */
   if (window.matchMedia) {
     var mq = window.matchMedia('(prefers-color-scheme: dark)');
     var onSys = function () { if (typo.theme === 'auto') applyTypo(); };
@@ -2730,105 +2304,78 @@ input[type="range"].slider::-moz-range-thumb {
     else if (mq.addListener) mq.addListener(onSys);
   }
 
-  /* ---- 分享面板 ---- */
   btnCreateRoom.addEventListener('click', createRoom);
-
   btnCopyLink.addEventListener('click', function () {
     copyToClipboard(shareLinkInput.value, '链接已复制，发给朋友即可');
   });
+  shareLinkInput.addEventListener('click', function () { this.select(); });
 
-  shareLinkInput.addEventListener('click', function () {
-    this.select();
-  });
-
-  /* ---- 更多菜单 ---- */
   $('miPreview').addEventListener('click', function () {
     closeSheet();
-    previewDoc.innerHTML = md(editor.value) ||
-      '<p style="color:var(--text-3)">还没有内容</p>';
+    previewDoc.innerHTML = md(editor.value) || '<p style="color:var(--text-3)">还没有内容</p>';
     previewLayer.classList.add('show');
   });
-
   $('btnClosePreview').addEventListener('click', function () {
     previewLayer.classList.remove('show');
   });
-
   $('miCopy').addEventListener('click', function () {
     closeSheet();
     if (!editor.value) { toast('还没有内容'); return; }
     copyToClipboard(editor.value, '已复制全文');
   });
-
   $('miImport').addEventListener('click', function () {
     closeSheet();
     fileInput.click();
   });
-
   $('miHelp').addEventListener('click', function () {
     closeSheet();
     setTimeout(function () {
       alert(
         '宫花红 · 使用说明\n\n' +
-        '【写作】\n' +
-        '点顶栏中间可以改标题；正文就是一块干净的白纸。\n' +
-        '所有内容都会自动存在本机浏览器里，关掉页面也不会丢。\n\n' +
-        '【排版】\n' +
-        '点底部「字体」可以换字体、字号、行距、首行缩进和主题。\n' +
-        '可选字体包括霞鹜文楷、汇文明朝体、筑紫明朝、宋体、楷体、黑体。\n\n' +
-        '【批注】\n' +
-        '先在正文里选中一段文字，再点底部「批注」，就能针对这段写意见。\n\n' +
-        '【协作】\n' +
-        '点底部「分享」生成链接，把链接发给朋友，\n' +
-        '对方打开就能和你同时编辑同一篇文档，并互相看到批注。\n\n' +
-        '【导出】\n' +
-        '点底部「导出」保存为 Word 文档。'
+        '【写作】\n点顶栏中间可以改标题；正文是一块干净的白纸。\n所有内容都会自动存在本机浏览器里，关掉页面也不会丢。\n\n' +
+        '【排版】\n点底部「字体」可以换字体、字号、行距、首行缩进和主题。\n可选字体：霞鹜文楷、汇文明朝体、筑紫明朝体、宋体、楷体。\n\n' +
+        '【批注】\n先在正文里选中一段文字，再点底部「批注」，就能针对这段写意见。\n\n' +
+        '【协作】\n点底部「分享」生成链接，把链接发给朋友，\n对方打开就能和你同时编辑同一篇文档，并互相看到批注。\n\n' +
+        '【导出】\n点底部「导出」保存为 Word 文档。'
       );
     }, 220);
   });
-
   $('miClear').addEventListener('click', function () {
     closeSheet();
     if (!editor.value) { toast('已经是空的了'); return; }
-    if (confirm('确定清空正文吗？此操作不可撤销。')) {
-      editor.value = '';
-      countText();
-      scheduleLocalSave();
-      schedulePush();
-      toast('已清空');
-    }
+    setTimeout(function () {
+      if (confirm('确定清空正文吗？此操作不可撤销。')) {
+        editor.value = '';
+        countText(); scheduleLocalSave(); schedulePush();
+        toast('已清空');
+      }
+    }, 220);
   });
 
-  /* ---- 文件选择 ---- */
   fileInput.addEventListener('change', function (e) {
     var f = e.target.files && e.target.files[0];
     readFile(f);
     e.target.value = '';
   });
 
-  /* ---- 拖拽导入（桌面端） ---- */
   ['dragover', 'drop'].forEach(function (ev) {
     document.addEventListener(ev, function (e) { e.preventDefault(); });
   });
-
   document.addEventListener('drop', function (e) {
     var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
     if (f) readFile(f);
   });
 
-  /* ---- 页面隐藏时保存 ---- */
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'hidden') {
       persistLocal();
       pushContent();
     }
   });
-
-  window.addEventListener('beforeunload', function () {
-    persistLocal();
-  });
+  window.addEventListener('beforeunload', persistLocal);
 
   /* ============================================================
-     ⑭ 初始化
+     初始化
      ============================================================ */
   (function init() {
     initSelf();
@@ -2837,20 +2384,13 @@ input[type="range"].slider::-moz-range-thumb {
     applyTypo();
     renderComments();
 
-    /* 读取 URL 上的房间号 */
     var room = '';
-    try {
-      var u = new URL(window.location.href);
-      room = u.searchParams.get('room') || '';
-    } catch (e) {}
+    try { room = new URL(window.location.href).searchParams.get('room') || ''; } catch (e) {}
 
     if (room && /^[A-Za-z0-9_-]{4,32}$/.test(room)) {
-      /* 进入他人的文档 */
       connectRoom(room);
       updateSharePanel();
-      saveHintText();
     } else {
-      /* 普通本地写作 */
       try {
         var raw = localStorage.getItem(LOCAL_KEY);
         if (raw) {
@@ -2865,16 +2405,11 @@ input[type="range"].slider::-moz-range-thumb {
       updateSharePanel();
     }
 
-    /* 移动端不自动聚焦，避免键盘弹出挡住内容 */
     if (window.innerWidth >= 720) {
       editor.focus();
       editor.setSelectionRange(editor.value.length, editor.value.length);
     }
   })();
-
-  function saveHintText() {
-    /* 占位：进入协作房间时可以给一点提示 */
-  }
 
 })();
 </script>
