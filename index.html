@@ -10,6 +10,7 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.css">
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/diff-match-patch@1.0.5/index.min.js"></script>
 
 <style>
 @font-face {
@@ -1042,6 +1043,8 @@ input[type="range"].slider::-moz-range-thumb {
 
   var skipFocusToEnd = false;
 
+  var lastSyncedText = '';
+
   var state = {
     title: '', comments: [], room: '', online: false,
     selfId: '', selfName: '', selfColor: '', peers: [],
@@ -1088,7 +1091,15 @@ input[type="range"].slider::-moz-range-thumb {
 
   function pushContent() {
     if (!collab.ready) return;
-    sendToRoom({ type: 'text', content: editor.value });
+    if (lastSyncedText === editor.value) return;
+    try {
+      var dmp = new diff_match_patch();
+      var patches = dmp.patch_make(lastSyncedText, editor.value);
+      if (!patches.length) { lastSyncedText = editor.value; return; }
+      var patchText = dmp.patch_toText(patches);
+      lastSyncedText = editor.value;
+      sendToRoom({ type: 'op', patch: patchText });
+    } catch (e) {}
   }
   function pushTitle() {
     if (!collab.ready) return;
@@ -1114,25 +1125,46 @@ input[type="range"].slider::-moz-range-thumb {
     }, 900);
   }
 
-  function applyRemoteText(text) {
-    if (text === editor.value) return;
-    var old = editor.value, pos = editor.selectionStart, focused = document.activeElement === editor;
-    var p = 0, maxP = Math.min(old.length, text.length);
-    while (p < maxP && old.charCodeAt(p) === text.charCodeAt(p)) p++;
-    var newPos = pos <= p ? pos : Math.max(p, pos + (text.length - old.length));
-    newPos = Math.min(newPos, text.length);
-    editor.value = text;
-    if (focused) { try { editor.setSelectionRange(newPos, newPos); } catch (e) {} }
-    countText();
-    persistLocal();
+  function applyRemotePatch(patchText) {
+    if (!patchText) return;
+    try {
+      var dmp = new diff_match_patch();
+      var patches = dmp.patch_fromText(patchText);
+      var oldText = editor.value;
+      var pos = editor.selectionStart;
+      var posEnd = editor.selectionEnd;
+
+      var offset = 0, offsetEnd = 0;
+      for (var i = 0; i < patches.length; i++) {
+        var p = patches[i];
+        var ps = p.start1, pe = p.start1 + p.length1;
+        var d = p.length2 - p.length1;
+
+        if (pos >= pe) offset += d;
+        else if (pos > ps) offset += (p.start1 + p.length2 - pos);
+
+        if (posEnd >= pe) offsetEnd += d;
+        else if (posEnd > ps) offsetEnd += (p.start1 + p.length2 - posEnd);
+      }
+
+      var result = dmp.patch_apply(patches, oldText);
+      var newText = result[0];
+
+      var focused = document.activeElement === editor;
+      editor.value = newText;
+      lastSyncedText = newText;
+
+      if (focused) {
+        var np = Math.max(0, Math.min(newText.length, pos + offset));
+        var npe = Math.max(np, Math.min(newText.length, posEnd + offsetEnd));
+        try { editor.setSelectionRange(np, npe); } catch (e) {}
+      }
+
+      countText();
+      persistLocal();
+    } catch (e) {}
   }
 
-  function updateTypingLock() {
-    var others = [];
-    for (var i = 0; i < state.peers.length; i++) {
-      var p = state.peers[i];
-      if (p.id !== state.selfId && p.typing) others.push(p);
-    }
     var shouldLock = others.length > 0 && !state.selfTyping;
     if (shouldLock) {
       if (!editor.readOnly) {
@@ -1167,23 +1199,34 @@ input[type="range"].slider::-moz-range-thumb {
         collab.suppress = true;
         titleInput.value = st;
         editor.value = sc;
+        lastSyncedText = sc;
         state.comments = sCm;
         collab.suppress = false;
         countText();
         renderComments();
       } else if (editor.value || titleInput.value) {
+        lastSyncedText = '';
         setTimeout(pushContent, 80);
         setTimeout(pushTitle, 150);
       }
 
-      if (Array.isArray(msg.peers)) { state.peers = msg.peers; renderPeers(); updateTypingLock(); }
-      updateSharePanel();
+      if (Array.isArray(msg.peers)) { state.peers = msg.peers;renderPeers();
       return;
     }
 
-    if (msg.type === 'text') {
+    if (msg.type === 'op') {
       if (msg.from === state.selfId || collab.suppress) return;
-      applyRemoteText(String(msg.content || ''));
+      applyRemotePatch(String(msg.patch || ''));
+      return;
+    }
+
+    if (msg.type === 'resync') {
+      var resyncText = String(msg.content || '');
+      if (resyncText !== editor.value) {
+        editor.value = resyncText;
+        lastSyncedText = resyncText;
+        countText();
+      }
       return;
     }
     if (msg.type === 'title') {
@@ -1204,7 +1247,7 @@ input[type="range"].slider::-moz-range-thumb {
     }
     if (msg.type === 'peers') {
       state.peers = Array.isArray(msg.peers) ? msg.peers : [];
-      renderPeers(); updateTypingLock(); updateSharePanel();
+      renderPeers(); updateSharePanel();
       return;
     }
     if (msg.type === 'comment:add' && msg.comment) {
@@ -1238,14 +1281,22 @@ input[type="range"].slider::-moz-range-thumb {
       var msg = e.data;
       if (!msg || msg.from === state.selfId) return;
       if (msg.type === 'hello') {
-        collab.bc.postMessage({ type: 'text', content: editor.value, from: state.selfId });
-        collab.bc.postMessage({ type: 'title', title: titleInput.value, from: state.selfId });
+        collab.bc.postMessage({ type: 'sync-all', content: editor.value, title: titleInput.value, from: state.selfId });
+        return;
+      }
+      if (msg.type === 'sync-all') {
+        if (!editor.value) {
+          editor.value = String(msg.content || '');
+          lastSyncedText = editor.value;
+          countText();
+        }
         return;
       }
       handleMessage(msg);
     };
     collab.ready = true;
     collab.bc.postMessage({ type: 'hello', from: state.selfId });
+    lastSyncedText = editor.value;
     state.peers = [{ id: state.selfId, name: state.selfName + '（本机）', typing: false }];
     renderPeers(); updateSharePanel();
   }
@@ -1265,7 +1316,7 @@ input[type="range"].slider::-moz-range-thumb {
     ws.onclose = function () {
       collab.ready = false; state.online = false; updateSharePanel();
       state.peers = [];
-      renderPeers(); updateTypingLock();
+      renderPeers(); 
       if (state.room && collab.retry < 6) {
         collab.retry++;
         clearTimeout(collab.reconnectTimer);
@@ -1288,7 +1339,7 @@ input[type="range"].slider::-moz-range-thumb {
     state.selfTyping = false;
     collab.ready = false;
     state.online = false;
-    if (!silent) { state.room = ''; state.peers = []; renderPeers(); updateTypingLock(); }
+    if (!silent) { state.room = ''; state.peers = []; renderPeers(); }
   }
 
   function renderPeers() {
