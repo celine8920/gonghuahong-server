@@ -17,7 +17,6 @@
   src: url("./fonts/Huiwen-mincho.otf") format("opentype");
   font-display: swap;
 }
-
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
@@ -29,7 +28,7 @@
   --text-3: #B5AFA3;
   --line: #EAE5DB;
   --accent: #4A8B6F;
-  --accent-soft: rgba(74,139,111,.1);
+  --accent-soft: rgba(74,139,111,.12);
   --accent-strong: #3A7359;
   --danger: #C25B4E;
   --shadow: 0 8px 30px rgba(60,50,30,.13);
@@ -45,14 +44,6 @@
   --safe-t: env(safe-area-inset-top, 0px);
 }
 
-[data-theme="dark"] {
-  --bg: #17171A; --bg-elev: #202024; --bg-sunken: #131316;
-  --text: #D6D3CC; --text-2: #7E7A72; --text-3: #57544D;
-  --line: #2B2B31; --accent: #6FB894;
-  --accent-soft: rgba(111,184,148,.13); --accent-strong: #8ACCA9;
-  --danger: #E08375; --shadow: 0 10px 34px rgba(0,0,0,.55);
-}
-
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 html, body { height: 100%; margin: 0; }
 
@@ -64,15 +55,21 @@ body {
   overflow: hidden;
   overscroll-behavior: none;
   transition: background .25s, color .25s;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
+body.has-bg-image { background-color: var(--bg); }
 
-button, input, textarea {
-  font-family: inherit; color: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
+button, input, textarea { font-family: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
 button { border: 0; background: transparent; cursor: pointer; }
 
 .app { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); }
+body.has-bg-image .app { background: transparent; }
+body.has-bg-image .topbar,
+body.has-bg-image .toolbar { background: rgba(255,255,255,.65); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+body.has-bg-image[data-theme="dark"] .topbar,
+body.has-bg-image[data-theme="dark"] .toolbar { background: rgba(20,20,24,.55); }
 
 .topbar {
   flex: 0 0 auto; height: 52px; padding: var(--safe-t) 4px 0;
@@ -88,7 +85,7 @@ button { border: 0; background: transparent; cursor: pointer; }
   letter-spacing: .02em; padding: 0 6px; border-radius: 8px;
 }
 .title-input::placeholder { color: var(--text-3); font-weight: 400; }
-.title-input:focus { background: var(--bg-sunken); }
+.title-input:focus { background: rgba(255,255,255,.4); }
 
 .icon-btn {
   flex: 0 0 auto; width: 40px; height: 40px;
@@ -96,43 +93,67 @@ button { border: 0; background: transparent; cursor: pointer; }
   border-radius: 50%; color: var(--text-2);
   transition: background .15s, color .15s;
 }
-.icon-btn:active { background: var(--bg-sunken); }
+.icon-btn:active { background: rgba(0,0,0,.05); }
 .icon-btn svg { display: block; }
 
 .peers { display: none; align-items: center; padding-right: 2px; flex: 0 0 auto; }
 .peers.show { display: inline-flex; }
-
 .peer-dot {
   width: 26px; height: 26px; border-radius: 50%; margin-left: -8px;
   border: 2px solid var(--bg);
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 600; color: #fff; user-select: none;
+  position: relative;
 }
 .peer-dot:first-child { margin-left: 0; }
+.peer-dot.typing::after {
+  content: ""; position: absolute; right: -1px; bottom: -1px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #5ac27a; border: 2px solid var(--bg);
+  animation: pulse 1s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
 
 .editor-wrap { flex: 1 1 auto; min-height: 0; position: relative; display: flex; justify-content: center; }
 
 .editor {
   width: 100%; max-width: 760px; height: 100%;
-  border: 0; outline: 0; resize: none; background: transparent;
+  border: 0; outline: 0; resize: none;
+  background: transparent;
   padding: 14px 22px 90px;
   font-family: var(--font-writer);
-  font-size: var(--writer-size); line-height: var(--writer-lh);
+  font-size: var(--writer-size);
+  line-height: var(--writer-lh);
   color: var(--text); letter-spacing: .02em;
   overflow-y: auto; -webkit-overflow-scrolling: touch;
   text-indent: var(--writer-indent);
+  transition: opacity .15s;
 }
 .editor::placeholder { color: var(--text-3); font-size: .88em; line-height: 1.8; text-indent: 0; letter-spacing: 0; }
 .editor::-webkit-scrollbar { width: 4px; }
 .editor::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 .editor::-webkit-scrollbar-track { background: transparent; }
+.editor.locked { opacity: .65; }
 
 .counter {
   position: absolute; right: 14px; bottom: 12px;
-  font-size: 12px; color: var(--text-3); pointer-events: none;
+  font-size: 12px; color: var(--text-3);
+  pointer-events: none;
   font-variant-numeric: tabular-nums; letter-spacing: .3px;
-  background: var(--bg); padding: 2px 6px; border-radius: 8px; opacity: .9;
+  padding: 2px 6px; border-radius: 8px; opacity: .9;
 }
+
+.typing-banner {
+  position: absolute; top: 8px; left: 50%;
+  transform: translate(-50%, -6px);
+  background: var(--accent); color: #fff;
+  font-size: 12px; padding: 5px 14px; border-radius: 14px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .22s, transform .22s;
+  z-index: 15; white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0,0,0,.16);
+}
+.typing-banner.show { opacity: 1; transform: translate(-50%, 0); }
 
 .toolbar {
   flex: 0 0 auto; height: calc(58px + var(--safe-b));
@@ -150,21 +171,21 @@ button { border: 0; background: transparent; cursor: pointer; }
   color: var(--text-2); font-size: 10.5px; letter-spacing: .5px;
   transition: color .15s, background .15s; position: relative;
 }
-.tool:active { background: var(--bg-sunken); }
+.tool:active { background: rgba(0,0,0,.05); }
 .tool.on { color: var(--accent); }
 .tool svg { display: block; }
-
 .tool .badge {
   position: absolute; top: 5px; left: 50%; margin-left: 4px;
   min-width: 15px; height: 15px; padding: 0 4px; border-radius: 8px;
   background: var(--danger); color: #fff;
   font-size: 10px; line-height: 15px; text-align: center; font-weight: 600;
+  font-style: normal;
 }
 
 .scrim {
   position: fixed; inset: 0; background: rgba(30,25,15,.38);
   opacity: 0; pointer-events: none; transition: opacity .24s;
-  z-index: 60; backdrop-filter: blur(1px); -webkit-backdrop-filter: blur(1px);
+  z-index: 60;
 }
 .scrim.show { opacity: 1; pointer-events: auto; }
 
@@ -181,22 +202,12 @@ button { border: 0; background: transparent; cursor: pointer; }
   overflow: hidden; pointer-events: none;
 }
 .sheet.show { transform: translateY(0); pointer-events: auto; }
-
 .sheet-grip { flex: 0 0 auto; padding: 9px 0 3px; display: flex; justify-content: center; }
 .sheet-grip::after { content: ""; width: 36px; height: 4px; border-radius: 2px; background: var(--line); }
-
-.sheet-head {
-  flex: 0 0 auto; display: flex; align-items: center;
-  gap: 8px; padding: 6px 8px 10px 20px;
-}
+.sheet-head { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; padding: 6px 8px 10px 20px; }
 .sheet-title { flex: 1 1 auto; font-size: 16px; font-weight: 600; letter-spacing: .3px; }
 .sheet-sub { font-size: 12px; color: var(--text-3); margin-right: 4px; }
-
-.sheet-body {
-  flex: 1 1 auto; min-height: 0; overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 2px 16px 20px; overscroll-behavior: contain;
-}
+.sheet-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 2px 16px 20px; overscroll-behavior: contain; }
 
 @media (min-width: 720px) {
   .sheet {
@@ -211,7 +222,7 @@ button { border: 0; background: transparent; cursor: pointer; }
   .sheet-head { padding-top: 16px; }
 }
 
-.group { margin-bottom: 24px; }
+.group { margin-bottom: 22px; }
 .group:last-child { margin-bottom: 4px; }
 
 .group-label {
@@ -222,7 +233,6 @@ button { border: 0; background: transparent; cursor: pointer; }
 .group-label .val { font-size: 13px; font-weight: 500; letter-spacing: 0; color: var(--accent); font-variant-numeric: tabular-nums; }
 
 .font-list { display: flex; flex-direction: column; gap: 3px; }
-
 .font-option {
   display: flex; align-items: center; gap: 12px;
   width: 100%; min-height: 56px; padding: 10px 12px;
@@ -231,7 +241,6 @@ button { border: 0; background: transparent; cursor: pointer; }
 }
 .font-option:active { background: var(--bg-sunken); }
 .font-option.active { background: var(--accent-soft); border-color: rgba(74,139,111,.3); }
-
 .fo-check {
   flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%;
   border: 2px solid var(--text-3);
@@ -242,13 +251,11 @@ button { border: 0; background: transparent; cursor: pointer; }
 .fo-check::after { content: "✓"; opacity: 0; transition: opacity .15s; }
 .font-option.active .fo-check { background: var(--accent); border-color: var(--accent); }
 .font-option.active .fo-check::after { opacity: 1; }
-
 .fo-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .fo-name { font-size: 12px; color: var(--text-3); letter-spacing: .3px; }
 .fo-sample { font-size: 18px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .slider-row { display: flex; align-items: center; gap: 10px; padding: 0 2px; }
-
 .step-btn {
   flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%;
   background: var(--bg-sunken); color: var(--text-2);
@@ -280,7 +287,6 @@ input[type="range"].slider::-moz-range-thumb {
 .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 0 4px; }
 .switch-label { font-size: 15px; }
 .switch-label small { display: block; font-size: 12px; color: var(--text-3); margin-top: 2px; }
-
 .switch {
   flex: 0 0 auto; position: relative; width: 50px; height: 30px;
   border-radius: 15px; background: var(--line); transition: background .2s;
@@ -294,17 +300,48 @@ input[type="range"].slider::-moz-range-thumb {
 .switch.on { background: var(--accent); }
 .switch.on::after { transform: translateX(20px); }
 
-.segmented { display: flex; gap: 4px; padding: 4px; background: var(--bg-sunken); border-radius: 12px; }
-.segmented button {
-  flex: 1 1 0; height: 40px; border-radius: 9px;
-  font-size: 14px; color: var(--text-2);
-  transition: background .18s, color .18s;
+.swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 0 2px; }
+.swatch {
+  position: relative;
+  height: 42px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform .12s, border-color .15s, box-shadow .15s;
+  overflow: hidden;
+  background-clip: padding-box;
 }
-.segmented button.on { background: var(--bg-elev); color: var(--text); font-weight: 500; box-shadow: 0 1px 4px rgba(0,0,0,.09); }
+.swatch:active { transform: scale(.95); }
+.swatch.on {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--bg-elev);
+}
+.swatch-name {
+  position: absolute;
+  bottom: 3px; left: 4px; right: 4px;
+  font-size: 10px;
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: rgba(0,0,0,.6);
+  text-shadow: 0 1px 2px rgba(255,255,255,.6);
+}
+.swatch.dark .swatch-name { color: rgba(255,255,255,.75); text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+
+.bg-tools { display: flex; gap: 8px; margin-top: 10px; }
+.bg-tools button {
+  flex: 1; height: 42px;
+  border-radius: 10px;
+  background: var(--bg-sunken);
+  color: var(--text);
+  font-size: 14px;
+  transition: background .15s;
+}
+.bg-tools button:active { background: var(--line); }
 
 .try-box {
   border: 1px solid var(--line); border-radius: 12px;
-  padding: 16px 18px; background: var(--bg);
+  padding: 16px 18px;
   font-family: var(--font-writer);
   font-size: var(--writer-size); line-height: var(--writer-lh);
   text-indent: var(--writer-indent);
@@ -322,20 +359,15 @@ input[type="range"].slider::-moz-range-thumb {
 .big-btn.ghost { background: var(--bg-sunken); color: var(--text); }
 
 .comment-list { display: flex; flex-direction: column; gap: 10px; }
-.comment {
-  border: 1px solid var(--line); border-radius: 14px;
-  padding: 12px 14px; background: var(--bg);
-  transition: opacity .2s;
-}
+.comment { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; transition: opacity .2s; }
 .comment.resolved { opacity: .5; }
-
 .comment-quote {
   font-family: var(--font-writer); font-size: 14px; line-height: 1.6;
   color: var(--text-2); border-left: 3px solid var(--line);
   padding-left: 10px; margin-bottom: 8px; max-height: 3.2em; overflow: hidden;
 }
 .comment-text { font-size: 15px; line-height: 1.65; color: var(--text); white-space: pre-wrap; word-break: break-word; }
-.comment-meta { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--text-3); }
+.comment-meta { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--text-3); flex-wrap: wrap; }
 .comment-meta .who { font-weight: 600; }
 .comment-meta .sp { flex: 1 1 auto; }
 
@@ -346,7 +378,7 @@ input[type="range"].slider::-moz-range-thumb {
 
 .empty-tip { text-align: center; color: var(--text-3); font-size: 14px; line-height: 1.9; padding: 34px 20px; }
 
-.composer { border: 1px solid var(--accent); border-radius: 14px; padding: 12px 14px; background: var(--bg); margin-bottom: 12px; }
+.composer { border: 1px solid var(--accent); border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; }
 .composer .quote {
   font-family: var(--font-writer); font-size: 14px; line-height: 1.6;
   color: var(--text-2); border-left: 3px solid var(--accent);
@@ -365,7 +397,7 @@ input[type="range"].slider::-moz-range-thumb {
 .share-status .txt { flex: 1 1 auto; font-size: 14px; line-height: 1.5; }
 .share-status .txt small { display: block; color: var(--text-3); font-size: 12px; margin-top: 2px; }
 
-.link-box { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 12px; padding: 6px 6px 6px 14px; background: var(--bg); margin-bottom: 14px; }
+.link-box { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 12px; padding: 6px 6px 6px 14px; margin-bottom: 14px; }
 .link-box input { flex: 1 1 auto; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 13.5px; color: var(--text-2); font-family: ui-monospace, Menlo, Consolas, monospace; text-overflow: ellipsis; }
 .link-box .copy { flex: 0 0 auto; height: 38px; padding: 0 16px; border-radius: 10px; background: var(--accent); color: #fff; font-size: 14px; font-weight: 500; }
 .link-box .copy:active { background: var(--accent-strong); }
@@ -394,10 +426,8 @@ input[type="range"].slider::-moz-range-thumb {
   pointer-events: none;
 }
 .preview-layer.show { transform: translateY(0); pointer-events: auto; }
-
 .preview-bar { flex: 0 0 auto; height: calc(52px + var(--safe-t)); padding: var(--safe-t) 8px 0 16px; display: flex; align-items: center; border-bottom: 1px solid var(--line); }
 .preview-bar .t { flex: 1 1 auto; font-size: 16px; font-weight: 600; }
-
 .preview-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 22px 24px calc(48px + var(--safe-b)); }
 .preview-doc { max-width: 720px; margin: 0 auto; font-family: var(--font-writer); font-size: var(--writer-size); line-height: var(--writer-lh); color: var(--text); }
 .preview-doc > *:first-child { margin-top: 0; }
@@ -424,7 +454,6 @@ input[type="range"].slider::-moz-range-thumb {
   transition: opacity .22s, transform .22s;
   z-index: 200; max-width: 82vw; text-align: center;
 }
-[data-theme="dark"] .toast { background: rgba(232,230,224,.94); color: #1A1A1A; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 @media (max-width: 420px) {
@@ -447,7 +476,6 @@ input[type="range"].slider::-moz-range-thumb {
     </button>
 
     <input class="title-input" id="titleInput" type="text" placeholder="无标题" maxlength="80" autocomplete="off" aria-label="文章标题">
-
     <div class="peers" id="peers" aria-label="协作者"></div>
 
     <button class="icon-btn" type="button" id="btnShareTop" aria-label="分享协作">
@@ -461,6 +489,7 @@ input[type="range"].slider::-moz-range-thumb {
   </header>
 
   <div class="editor-wrap">
+    <div class="typing-banner" id="typingBanner"></div>
     <textarea class="editor" id="editor" spellcheck="false" placeholder="开始写点什么…"></textarea>
     <div class="counter" id="counter">0 字</div>
   </div>
@@ -507,7 +536,7 @@ input[type="range"].slider::-moz-range-thumb {
 <section class="sheet" id="sheetFont" role="dialog" aria-modal="true" aria-label="字体与排版">
   <div class="sheet-grip"></div>
   <div class="sheet-head">
-    <span class="sheet-title">字体与排版</span>
+    <span class="sheet-title">字体与外观</span>
     <button class="icon-btn" type="button" data-close aria-label="关闭">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
         <path d="M6 6l12 12M18 6 6 18"/>
@@ -538,21 +567,26 @@ input[type="range"].slider::-moz-range-thumb {
     </div>
 
     <div class="group">
+      <div class="group-label"><span>背景色</span><span class="val" id="valBg">米白</span></div>
+      <div class="swatches" id="bgSwatches"></div>
+      <div class="bg-tools">
+        <button type="button" id="btnBgImage">🖼 上传图片背景</button>
+        <button type="button" id="btnBgClear">清除图片</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span>文字颜色</span><span class="val" id="valFg">墨黑</span></div>
+      <div class="swatches" id="fgSwatches"></div>
+    </div>
+
+    <div class="group">
       <div class="switch-row">
         <div class="switch-label">
           首行缩进
           <small>每段开头空两格</small>
         </div>
         <button class="switch" type="button" id="swIndent" role="switch" aria-checked="false"></button>
-      </div>
-    </div>
-
-    <div class="group">
-      <div class="group-label">主题</div>
-      <div class="segmented" id="themeSeg">
-        <button type="button" data-theme-val="light">浅色</button>
-        <button type="button" data-theme-val="dark">深色</button>
-        <button type="button" data-theme-val="auto">跟随系统</button>
       </div>
     </div>
 
@@ -693,15 +727,14 @@ input[type="range"].slider::-moz-range-thumb {
 </div>
 
 <input type="file" id="fileInput" hidden accept=".txt,.md,.markdown,.html,.htm,.json,.csv,text/*">
+<input type="file" id="bgImageInput" hidden accept="image/*">
 <div class="toast" id="toast"></div>
 
 <script>
 (function () {
   'use strict';
 
-  var CONFIG = {
-    SERVER: 'https://gong-hua-hong.onrender.com'
-  };
+  var CONFIG = { SERVER: 'https://gong-hua-hong.onrender.com' };
 
   var FONTS = [
     { id: 'lxgw', name: '霞鹜文楷', doc: 'LXGW WenKai', sample: '宫花红处，春水绿时',
@@ -716,9 +749,34 @@ input[type="range"].slider::-moz-range-thumb {
       stack: '"楷体",KaiTi,"Kaiti SC","STKaiti","KaiTi_GB2312",serif' }
   ];
 
-  var DEFAULT_TYPO = { font: 'lxgw', size: 19, lh: 1.95, indent: false, theme: 'light' };
+  var BG_COLORS = [
+    { name: '纯白', value: '#FFFFFF' },
+    { name: '米白', value: '#FCFAF6' },
+    { name: '米黄', value: '#F5EDD8' },
+    { name: '藕荷', value: '#F3E9EC' },
+    { name: '竹青', value: '#EAF1EA' },
+    { name: '灰蓝', value: '#E9EDF2' },
+    { name: '浅灰', value: '#EEEEEE' },
+    { name: '石墨', value: '#2A2A2E' }
+  ];
+
+  var FG_COLORS = [
+    { name: '纯黑', value: '#000000' },
+    { name: '墨黑', value: '#222222' },
+    { name: '深灰', value: '#555555' },
+    { name: '棕褐', value: '#5C4632' },
+    { name: '藏青', value: '#1F3A5F' },
+    { name: '绛红', value: '#7A2E2E' },
+    { name: '墨绿', value: '#2F4F3E' },
+    { name: '金棕', value: '#8B6D3F' }
+  ];
+
+  var DEFAULT_TYPO = {
+    font: 'lxgw', size: 19, lh: 1.95, indent: false,
+    bg: '#FCFAF6', fg: '#222222', bgImage: ''
+  };
   var MIN_SIZE = 14, MAX_SIZE = 40;
-  var TYPO_KEY = 'writer.typo.v2';
+  var TYPO_KEY = 'writer.typo.v3';
   var LOCAL_KEY = 'writer.local.v2';
   var CLIENT_KEY = 'writer.clientId';
 
@@ -726,18 +784,23 @@ input[type="range"].slider::-moz-range-thumb {
 
   var editor = $('editor'), titleInput = $('titleInput'), counter = $('counter');
   var peersEl = $('peers'), scrim = $('scrim'), toastEl = $('toast'), themeColor = $('themeColor');
+  var typingBanner = $('typingBanner');
+
   var sheetFont = $('sheetFont'), sheetComment = $('sheetComment');
   var sheetShare = $('sheetShare'), sheetMenu = $('sheetMenu');
   var fontListEl = $('fontList'), rangeSize = $('rangeSize'), valSize = $('valSize');
   var rangeLh = $('rangeLh'), valLh = $('valLh'), swIndent = $('swIndent');
-  var themeSeg = $('themeSeg');
+  var bgSwatches = $('bgSwatches'), fgSwatches = $('fgSwatches');
+  var valBg = $('valBg'), valFg = $('valFg');
+
   var commentList = $('commentList'), composerSlot = $('composerSlot');
   var commentCount = $('commentCount'), commentBadge = $('commentBadge');
   var shareStatus = $('shareStatus'), shareStatusText = $('shareStatusText');
   var shareLinkWrap = $('shareLinkWrap'), shareLinkInput = $('shareLinkInput');
   var btnCopyLink = $('btnCopyLink'), btnCreateRoom = $('btnCreateRoom');
   var shareHint = $('shareHint');
-  var previewLayer = $('previewLayer'), previewDoc = $('previewDoc'), fileInput = $('fileInput');
+  var previewLayer = $('previewLayer'), previewDoc = $('previewDoc');
+  var fileInput = $('fileInput'), bgImageInput = $('bgImageInput');
   var activeSheet = null;
 
   var typo = Object.assign({}, DEFAULT_TYPO);
@@ -746,6 +809,27 @@ input[type="range"].slider::-moz-range-thumb {
     for (var i = 0; i < FONTS.length; i++) if (FONTS[i].id === id) return FONTS[i];
     return FONTS[0];
   }
+
+  function hex2rgb(h) {
+    var m = String(h).match(/^#?([0-9a-f]{6})$/i);
+    if (!m) return null;
+    var n = parseInt(m[1], 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  function rgb2hex(r, g, b) {
+    var p = function (v) { v = Math.max(0, Math.min(255, Math.round(v))); return (v < 16 ? '0' : '') + v.toString(16); };
+    return '#' + p(r) + p(g) + p(b);
+  }
+  function mix(a, b, t) {
+    var x = hex2rgb(a), y = hex2rgb(b);
+    if (!x || !y) return a;
+    return rgb2hex(x[0] + (y[0] - x[0]) * t, x[1] + (y[1] - x[1]) * t, x[2] + (y[2] - x[2]) * t);
+  }
+  function luminance(h) {
+    var c = hex2rgb(h); if (!c) return 1;
+    return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255;
+  }
+  function isDark(h) { return luminance(h) < 0.42; }
 
   function loadTypo() {
     try {
@@ -759,19 +843,13 @@ input[type="range"].slider::-moz-range-thumb {
       var l = parseFloat(o.lh);
       if (!isNaN(l)) typo.lh = Math.min(2.8, Math.max(1.4, l));
       typo.indent = !!o.indent;
-      if (o.theme === 'light' || o.theme === 'dark' || o.theme === 'auto') typo.theme = o.theme;
+      if (/^#[0-9a-f]{6}$/i.test(o.bg)) typo.bg = o.bg;
+      if (/^#[0-9a-f]{6}$/i.test(o.fg)) typo.fg = o.fg;
+      if (typeof o.bgImage === 'string') typo.bgImage = o.bgImage;
     } catch (e) {}
   }
-
   function saveTypo() {
     try { localStorage.setItem(TYPO_KEY, JSON.stringify(typo)); } catch (e) {}
-  }
-
-  function resolveTheme() {
-    if (typo.theme === 'auto') {
-      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    return typo.theme;
   }
 
   function applyTypo() {
@@ -782,6 +860,41 @@ input[type="range"].slider::-moz-range-thumb {
     r.style.setProperty('--writer-lh', typo.lh);
     r.style.setProperty('--writer-indent', typo.indent ? '2em' : '0em');
 
+    var bg = typo.bg, fg = typo.fg;
+    var dark = isDark(bg);
+    r.style.setProperty('--bg', bg);
+    r.style.setProperty('--text', fg);
+    r.setAttribute('data-theme', dark ? 'dark' : 'light');
+
+    if (dark) {
+      r.style.setProperty('--bg-elev', mix(bg, '#FFFFFF', 0.08));
+      r.style.setProperty('--bg-sunken', mix(bg, '#FFFFFF', 0.04));
+      r.style.setProperty('--line', mix(bg, '#FFFFFF', 0.16));
+      r.style.setProperty('--text-2', mix(fg, bg, 0.4));
+      r.style.setProperty('--text-3', mix(fg, bg, 0.68));
+      r.style.setProperty('--accent', '#7CC4A0');
+      r.style.setProperty('--accent-strong', '#96D6B4');
+      r.style.setProperty('--accent-soft', 'rgba(124,196,160,.18)');
+    } else {
+      r.style.setProperty('--bg-elev', '#FFFFFF');
+      r.style.setProperty('--bg-sunken', mix(bg, '#000000', 0.05));
+      r.style.setProperty('--line', mix(bg, '#000000', 0.1));
+      r.style.setProperty('--text-2', mix(fg, bg, 0.42));
+      r.style.setProperty('--text-3', mix(fg, bg, 0.66));
+      r.style.setProperty('--accent', '#4A8B6F');
+      r.style.setProperty('--accent-strong', '#3A7359');
+      r.style.setProperty('--accent-soft', 'rgba(74,139,111,.12)');
+    }
+    themeColor.setAttribute('content', bg);
+
+    if (typo.bgImage) {
+      document.body.style.backgroundImage = 'url(' + typo.bgImage + ')';
+      document.body.classList.add('has-bg-image');
+    } else {
+      document.body.style.backgroundImage = '';
+      document.body.classList.remove('has-bg-image');
+    }
+
     valSize.textContent = typo.size + ' px';
     valLh.textContent = typo.lh.toFixed(2);
     rangeSize.value = typo.size;
@@ -790,31 +903,63 @@ input[type="range"].slider::-moz-range-thumb {
     swIndent.classList.toggle('on', typo.indent);
     swIndent.setAttribute('aria-checked', typo.indent ? 'true' : 'false');
 
-    var t = resolveTheme();
-    r.setAttribute('data-theme', t);
-    themeColor.setAttribute('content', t === 'dark' ? '#17171A' : '#FCFAF6');
-
-    var btns = themeSeg.querySelectorAll('button');
-    for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('on', btns[i].getAttribute('data-theme-val') === typo.theme);
-
     var opts = fontListEl.querySelectorAll('.font-option');
-    for (var j = 0; j < opts.length; j++) opts[j].classList.toggle('active', opts[j].getAttribute('data-id') === typo.font);
+    for (var i = 0; i < opts.length; i++)
+      opts[i].classList.toggle('active', opts[i].getAttribute('data-id') === typo.font);
+
+    highlightSwatch(bgSwatches, typo.bg);
+    highlightSwatch(fgSwatches, typo.fg);
+    valBg.textContent = nameOf(BG_COLORS, typo.bg) || '自定义';
+    valFg.textContent = nameOf(FG_COLORS, typo.fg) || '自定义';
+  }
+
+  function nameOf(list, v) {
+    for (var i = 0; i < list.length; i++)
+      if (list[i].value.toLowerCase() === String(v).toLowerCase()) return list[i].name;
+    return '';
+  }
+  function highlightSwatch(container, value) {
+    var items = container.querySelectorAll('.swatch');
+    for (var i = 0; i < items.length; i++) {
+      var v = items[i].getAttribute('data-color');
+      items[i].classList.toggle('on', v && v.toLowerCase() === String(value).toLowerCase());
+    }
   }
 
   function buildFontList() {
     FONTS.forEach(function (f) {
       var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'font-option';
+      btn.type = 'button'; btn.className = 'font-option';
       btn.setAttribute('data-id', f.id);
-      var check = document.createElement('span'); check.className = 'fo-check';
+      var ck = document.createElement('span'); ck.className = 'fo-check';
       var body = document.createElement('span'); body.className = 'fo-body';
       var nm = document.createElement('span'); nm.className = 'fo-name'; nm.textContent = f.name;
-      var sp = document.createElement('span'); sp.className = 'fo-sample'; sp.style.fontFamily = f.stack; sp.textContent = f.sample;
+      var sp = document.createElement('span'); sp.className = 'fo-sample';
+      sp.style.fontFamily = f.stack; sp.textContent = f.sample;
       body.appendChild(nm); body.appendChild(sp);
-      btn.appendChild(check); btn.appendChild(body);
+      btn.appendChild(ck); btn.appendChild(body);
       btn.addEventListener('click', function () { typo.font = f.id; applyTypo(); saveTypo(); toast('字体：' + f.name); });
       fontListEl.appendChild(btn);
+    });
+  }
+
+  function buildSwatches(container, list, key) {
+    container.innerHTML = '';
+    list.forEach(function (c) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'swatch' + (isDark(c.value) ? ' dark' : '');
+      b.setAttribute('data-color', c.value);
+      b.style.background = c.value;
+      var nm = document.createElement('span');
+      nm.className = 'swatch-name';
+      nm.textContent = c.name;
+      b.appendChild(nm);
+      b.addEventListener('click', function () {
+        typo[key] = c.value;
+        applyTypo(); saveTypo();
+      });
+      container.appendChild(b);
     });
   }
 
@@ -848,7 +993,6 @@ input[type="range"].slider::-moz-range-thumb {
     }
     legacyCopy(text, okMsg, errMsg);
   }
-
   function legacyCopy(text, okMsg, errMsg) {
     var ta = document.createElement('textarea');
     ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-9999px';
@@ -869,7 +1013,6 @@ input[type="range"].slider::-moz-range-thumb {
       .replace(/~~([^~]+)~~/g, '<del>$1</del>')
       .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
   }
-
   function md(src) {
     var lines = String(src).split(/\r?\n/);
     var out = '', inCode = false, buf = [], list = null;
@@ -900,7 +1043,11 @@ input[type="range"].slider::-moz-range-thumb {
     return out;
   }
 
-  var state = { title: '', comments: [], room: '', online: false, selfId: '', selfName: '', selfColor: '', peers: [] };
+  var state = {
+    title: '', comments: [], room: '', online: false,
+    selfId: '', selfName: '', selfColor: '', peers: [],
+    lastSel: null, selfTyping: false
+  };
   var saveTimer = null;
 
   function countText() { counter.textContent = editor.value.replace(/\s/g, '').length + ' 字'; }
@@ -913,10 +1060,12 @@ input[type="range"].slider::-moz-range-thumb {
       }));
     } catch (e) {}
   }
-
   function scheduleLocalSave() { clearTimeout(saveTimer); saveTimer = setTimeout(persistLocal, 600); }
 
-  var collab = { ws: null, bc: null, local: false, ready: false, suppress: false, pushTimer: null, reconnectTimer: null, retry: 0 };
+  /* ============================================================
+     协作
+     ============================================================ */
+  var collab = { ws: null, bc: null, local: false, ready: false, suppress: false, pushTimer: null, reconnectTimer: null, retry: 0, typingTimer: null };
   var COLORS = ['#4A8B6F','#C2873F','#5B7FBF','#B3618A','#8A7BC8','#4F9BA8','#C2604F','#7E9B4A'];
 
   function pickColor(id) {
@@ -924,7 +1073,6 @@ input[type="range"].slider::-moz-range-thumb {
     for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
     return COLORS[h % COLORS.length];
   }
-
   function initSelf() {
     var id;
     try {
@@ -936,31 +1084,44 @@ input[type="range"].slider::-moz-range-thumb {
     state.selfName = '访客' + id.slice(-3).toUpperCase();
   }
 
+  function sendToRoom(payload) {
+    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); return true; }
+    if (collab.ws && collab.ws.readyState === 1) { collab.ws.send(JSON.stringify(payload)); return true; }
+    return false;
+  }
+
   function pushContent() {
     if (!collab.ready) return;
-    var payload = { type: 'text', content: editor.value };
-    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); }
-    else if (collab.ws && collab.ws.readyState === 1) collab.ws.send(JSON.stringify(payload));
+    sendToRoom({ type: 'text', content: editor.value });
   }
-
   function pushTitle() {
     if (!collab.ready) return;
-    var payload = { type: 'title', title: titleInput.value };
-    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); }
-    else if (collab.ws && collab.ws.readyState === 1) collab.ws.send(JSON.stringify(payload));
+    sendToRoom({ type: 'title', title: titleInput.value });
   }
-
   function schedulePush() {
     if (!collab.ready) return;
     clearTimeout(collab.pushTimer);
     collab.pushTimer = setTimeout(pushContent, 260);
   }
 
+  /* 打字通知：立即发 typing=true，停手后发 typing=false + 完整文本 */
+  function notifyTyping() {
+    if (!collab.ready) return;
+    if (!state.selfTyping) {
+      state.selfTyping = true;
+      sendToRoom({ type: 'typing', active: true });
+    }
+    clearTimeout(collab.typingTimer);
+    collab.typingTimer = setTimeout(function () {
+      state.selfTyping = false;
+      sendToRoom({ type: 'typing', active: false });
+      pushContent();
+    }, 900);
+  }
+
   function applyRemoteText(text) {
     if (text === editor.value) return;
-    var old = editor.value;
-    var pos = editor.selectionStart;
-    var focused = document.activeElement === editor;
+    var old = editor.value, pos = editor.selectionStart, focused = document.activeElement === editor;
     var p = 0, maxP = Math.min(old.length, text.length);
     while (p < maxP && old.charCodeAt(p) === text.charCodeAt(p)) p++;
     var newPos = pos <= p ? pos : Math.max(p, pos + (text.length - old.length));
@@ -969,6 +1130,30 @@ input[type="range"].slider::-moz-range-thumb {
     if (focused) { try { editor.setSelectionRange(newPos, newPos); } catch (e) {} }
     countText();
     persistLocal();
+  }
+
+  function updateTypingLock() {
+    /* 有别人正在打字，且自己当前没有在打字 → 锁定 */
+    var others = [];
+    for (var i = 0; i < state.peers.length; i++) {
+      var p = state.peers[i];
+      if (p.id !== state.selfId && p.typing) others.push(p);
+    }
+    var shouldLock = others.length > 0 && !state.selfTyping;
+    if (shouldLock) {
+      if (!editor.readOnly) {
+        editor.readOnly = true;
+        editor.classList.add('locked');
+      }
+      typingBanner.textContent = '✎ ' + (others[0].name || '对方') + ' 正在输入…';
+      typingBanner.classList.add('show');
+    } else {
+      if (editor.readOnly) {
+        editor.readOnly = false;
+        editor.classList.remove('locked');
+      }
+      typingBanner.classList.remove('show');
+    }
   }
 
   function handleMessage(msg) {
@@ -980,15 +1165,15 @@ input[type="range"].slider::-moz-range-thumb {
       state.selfColor = pickColor(state.selfId);
       state.selfName = msg.selfName || state.selfName;
 
-      var serverContent = (msg.doc && typeof msg.doc.content === 'string') ? msg.doc.content : '';
-      var serverTitle = (msg.doc && typeof msg.doc.title === 'string') ? msg.doc.title : '';
-      var serverComments = (msg.doc && Array.isArray(msg.doc.comments)) ? msg.doc.comments : [];
+      var sc = (msg.doc && typeof msg.doc.content === 'string') ? msg.doc.content : '';
+      var st = (msg.doc && typeof msg.doc.title === 'string') ? msg.doc.title : '';
+      var sCm = (msg.doc && Array.isArray(msg.doc.comments)) ? msg.doc.comments : [];
 
-      if (serverContent || serverTitle) {
+      if (sc || st) {
         collab.suppress = true;
-        titleInput.value = serverTitle;
-        editor.value = serverContent;
-        state.comments = serverComments;
+        titleInput.value = st;
+        editor.value = sc;
+        state.comments = sCm;
         collab.suppress = false;
         countText();
         renderComments();
@@ -997,7 +1182,7 @@ input[type="range"].slider::-moz-range-thumb {
         setTimeout(pushTitle, 150);
       }
 
-      if (Array.isArray(msg.peers)) { state.peers = msg.peers; renderPeers(); }
+      if (Array.isArray(msg.peers)) { state.peers = msg.peers; renderPeers(); updateTypingLock(); }
       updateSharePanel();
       return;
     }
@@ -1007,39 +1192,43 @@ input[type="range"].slider::-moz-range-thumb {
       applyRemoteText(String(msg.content || ''));
       return;
     }
-
     if (msg.type === 'title') {
       if (msg.from === state.selfId || collab.suppress) return;
       var t = String(msg.title || '');
       if (t !== titleInput.value && document.activeElement !== titleInput) titleInput.value = t;
       return;
     }
-
-    if (msg.type === 'peers') {
-      state.peers = Array.isArray(msg.peers) ? msg.peers : [];
-      renderPeers(); updateSharePanel();
+    if (msg.type === 'typing') {
+      /* 服务器会把 typing 广播到 peers，本地模式需要手动合并 */
+      if (collab.local) {
+        for (var k = 0; k < state.peers.length; k++) {
+          if (state.peers[k].id === msg.from) state.peers[k].typing = !!msg.active;
+        }
+        renderPeers();
+        updateTypingLock();
+      }
       return;
     }
-
+    if (msg.type === 'peers') {
+      state.peers = Array.isArray(msg.peers) ? msg.peers : [];
+      renderPeers(); updateTypingLock(); updateSharePanel();
+      return;
+    }
     if (msg.type === 'comment:add' && msg.comment) {
       var exist = false;
-      for (var i = 0; i < state.comments.length; i++) {
+      for (var i = 0; i < state.comments.length; i++)
         if (state.comments[i].id === msg.comment.id) { exist = true; break; }
-      }
       if (!exist) state.comments.push(msg.comment);
       renderComments();
       if (msg.comment.clientId !== state.selfId) toast((msg.comment.author || '有人') + ' 添加了一条批注');
       return;
     }
-
     if (msg.type === 'comment:update' && msg.comment) {
-      for (var j = 0; j < state.comments.length; j++) {
+      for (var j = 0; j < state.comments.length; j++)
         if (state.comments[j].id === msg.comment.id) { state.comments[j] = msg.comment; break; }
-      }
       renderComments();
       return;
     }
-
     if (msg.type === 'comment:delete') {
       state.comments = state.comments.filter(function (c) { return c.id !== msg.id; });
       renderComments();
@@ -1048,7 +1237,7 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   function connectLocal(room) {
-    if (typeof BroadcastChannel === 'undefined') { toast('当前浏览器不支持本地协作演示'); return; }
+    if (typeof BroadcastChannel === 'undefined') { toast('当前浏览器不支持本地协作'); return; }
     collab.local = true;
     try { collab.bc = new BroadcastChannel('writer-room-' + room); }
     catch (e) { toast('无法建立本地协作通道'); return; }
@@ -1064,7 +1253,7 @@ input[type="range"].slider::-moz-range-thumb {
     };
     collab.ready = true;
     collab.bc.postMessage({ type: 'hello', from: state.selfId });
-    state.peers = [{ id: state.selfId, name: state.selfName + '（本机）' }];
+    state.peers = [{ id: state.selfId, name: state.selfName + '（本机）', typing: false }];
     renderPeers(); updateSharePanel();
   }
 
@@ -1075,16 +1264,16 @@ input[type="range"].slider::-moz-range-thumb {
     var ws;
     try { ws = new WebSocket(wsUrl); } catch (e) { toast('无法连接协作服务器'); return; }
     collab.ws = ws;
-
     ws.onopen = function () { collab.retry = 0; state.online = true; updateSharePanel(); renderPeers(); };
-
     ws.onmessage = function (e) {
       var msg; try { msg = JSON.parse(e.data); } catch (err) { return; }
       handleMessage(msg);
     };
-
     ws.onclose = function () {
       collab.ready = false; state.online = false; updateSharePanel();
+      /* 断线时解除锁定 */
+      state.peers = [];
+      renderPeers(); updateTypingLock();
       if (state.room && collab.retry < 6) {
         collab.retry++;
         clearTimeout(collab.reconnectTimer);
@@ -1097,16 +1286,17 @@ input[type="range"].slider::-moz-range-thumb {
   function connectRoom(room) {
     disconnectRoom(true);
     state.room = room;
-    if (CONFIG.SERVER) connectServer(room);
-    else connectLocal(room);
+    if (CONFIG.SERVER) connectServer(room); else connectLocal(room);
   }
-
   function disconnectRoom(silent) {
     if (collab.bc) { try { collab.bc.close(); } catch (e) {} collab.bc = null; }
     if (collab.ws) { try { collab.ws.close(); } catch (e) {} collab.ws = null; }
     clearTimeout(collab.reconnectTimer);
-    collab.ready = false; state.online = false;
-    if (!silent) { state.room = ''; state.peers = []; renderPeers(); }
+    clearTimeout(collab.typingTimer);
+    state.selfTyping = false;
+    collab.ready = false;
+    state.online = false;
+    if (!silent) { state.room = ''; state.peers = []; renderPeers(); updateTypingLock(); }
   }
 
   function renderPeers() {
@@ -1115,10 +1305,10 @@ input[type="range"].slider::-moz-range-thumb {
     peersEl.innerHTML = '';
     list.slice(0, 4).forEach(function (p) {
       var d = document.createElement('span');
-      d.className = 'peer-dot';
+      d.className = 'peer-dot' + (p.id !== state.selfId && p.typing ? ' typing' : '');
       d.style.background = pickColor(p.id || 'x');
       d.textContent = (p.name || '?').trim().charAt(0).toUpperCase();
-      d.title = p.name || '';
+      d.title = (p.name || '') + (p.typing ? '（正在输入）' : '');
       peersEl.appendChild(d);
     });
     if (list.length > 4) {
@@ -1131,6 +1321,9 @@ input[type="range"].slider::-moz-range-thumb {
     peersEl.classList.add('show');
   }
 
+  /* ============================================================
+     批注
+     ============================================================ */
   function sendComment(quote, text) {
     var payload = { type: 'comment:add', comment: { quote: quote, text: text, name: state.selfName } };
     if (!collab.ready) {
@@ -1138,31 +1331,27 @@ input[type="range"].slider::-moz-range-thumb {
         id: randId(10), quote: quote, text: text, author: state.selfName,
         clientId: state.selfId, resolved: false, createdAt: Date.now()
       });
-      renderComments(); toast('已添加批注（本地）');
+      renderComments();
+      toast('已添加批注（本地）');
       return;
     }
-    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); }
-    else if (collab.ws && collab.ws.readyState === 1) collab.ws.send(JSON.stringify(payload));
+    sendToRoom(payload);
   }
-
   function resolveComment(id, resolved) {
     var payload = { type: 'comment:resolve', id: id, resolved: resolved };
-    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); }
-    else if (collab.ws && collab.ws.readyState === 1) { collab.ws.send(JSON.stringify(payload)); return; }
-    for (var i = 0; i < state.comments.length; i++) {
+    if (!collab.local && collab.ws && collab.ws.readyState === 1) { sendToRoom(payload); return; }
+    if (collab.local) { sendToRoom(payload); }
+    for (var i = 0; i < state.comments.length; i++)
       if (state.comments[i].id === id) { state.comments[i].resolved = resolved; break; }
-    }
     renderComments();
   }
-
   function deleteComment(id) {
     var payload = { type: 'comment:delete', id: id };
-    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); }
-    else if (collab.ws && collab.ws.readyState === 1) { collab.ws.send(JSON.stringify(payload)); return; }
+    if (!collab.local && collab.ws && collab.ws.readyState === 1) { sendToRoom(payload); return; }
+    if (collab.local) { sendToRoom(payload); }
     state.comments = state.comments.filter(function (c) { return c.id !== id; });
     renderComments();
   }
-
   function fmtTime(ts) {
     if (!ts) return '';
     var d = new Date(ts), now = new Date();
@@ -1172,7 +1361,7 @@ input[type="range"].slider::-moz-range-thumb {
 
   function renderComments() {
     var open = state.comments.filter(function (c) { return !c.resolved; });
-    commentCount.textContent = state.comments.length ? open.length + ' 条待处理 / 共 ' + state.comments.length + ' 条' : '';
+    commentCount.textContent = state.comments.length ? open.length + ' 待处理 / 共 ' + state.comments.length + ' 条' : '';
     if (open.length > 0) { commentBadge.textContent = open.length > 99 ? '99+' : open.length; commentBadge.style.display = ''; }
     else { commentBadge.style.display = 'none'; }
     commentList.innerHTML = '';
@@ -1237,8 +1426,19 @@ input[type="range"].slider::-moz-range-thumb {
 
   function openCommentSheet() {
     composerSlot.innerHTML = '';
+
+    /* 优先用缓存的选区（点击按钮时 textarea 会失焦） */
     var sel = '';
-    if (document.activeElement === editor) sel = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+    var start = -1, end = -1;
+
+    if (document.activeElement === editor && editor.selectionStart !== editor.selectionEnd) {
+      start = editor.selectionStart; end = editor.selectionEnd;
+      sel = editor.value.substring(start, end);
+    } else if (state.lastSel && state.lastSel.start !== state.lastSel.end) {
+      start = state.lastSel.start; end = state.lastSel.end;
+      if (start >= 0 && end <= editor.value.length) sel = editor.value.substring(start, end);
+    }
+
     if (sel && sel.trim()) {
       var box = document.createElement('div'); box.className = 'composer';
       var q = document.createElement('div'); q.className = 'quote';
@@ -1254,12 +1454,24 @@ input[type="range"].slider::-moz-range-thumb {
         if (!v) { toast('批注内容不能为空'); return; }
         sendComment(sel, v);
         composerSlot.innerHTML = '';
+        state.lastSel = null;
       });
       actions.appendChild(cancel); actions.appendChild(send);
       box.appendChild(q); box.appendChild(ta); box.appendChild(actions);
       composerSlot.appendChild(box);
       setTimeout(function () { ta.focus(); }, 320);
+    } else {
+      var hint = document.createElement('div');
+      hint.className = 'empty-tip';
+      hint.style.padding = '20px 16px';
+      hint.style.background = 'var(--bg-sunken)';
+      hint.style.borderRadius = '12px';
+      hint.style.marginBottom = '12px';
+      hint.style.fontSize = '13.5px';
+      hint.textContent = '请先在正文里选中一段文字，再点这里添加批注。';
+      composerSlot.appendChild(hint);
     }
+
     renderComments();
     openSheet(sheetComment);
   }
@@ -1285,17 +1497,15 @@ input[type="range"].slider::-moz-range-thumb {
       shareLinkInput.value = buildShareUrl();
     }
     shareHint.innerHTML = CONFIG.SERVER
-      ? '链接有效期与你的服务器存储策略一致。打开链接的人可以实时看到你的输入，并添加批注。'
-      : '当前为<strong>本地演示模式</strong>：同一浏览器的多个标签页之间可以实时同步，用于体验协作效果。';
+      ? '链接有效期与你的服务器存储策略一致。打开链接的人可以实时看到你的输入，并添加批注。<br><br>为避免同时输入互相覆盖，一方在打字时，另一方的编辑器会暂时只读。'
+      : '当前为<strong>本地演示模式</strong>：同一浏览器的多个标签页之间可以实时同步。';
   }
-
   function buildShareUrl() {
     var u = new URL(window.location.href);
     u.searchParams.set('room', state.room);
     u.hash = '';
     return u.toString();
   }
-
   function createRoom() {
     var room = randId(10);
     if (CONFIG.SERVER) {
@@ -1306,7 +1516,6 @@ input[type="range"].slider::-moz-range-thumb {
     }
     connectRoom(room); updateSharePanel(); afterRoomReady(room);
   }
-
   function afterRoomReady(room) {
     try {
       var u = new URL(window.location.href);
@@ -1316,6 +1525,9 @@ input[type="range"].slider::-moz-range-thumb {
     toast('协作已开启，把链接发给朋友吧');
   }
 
+  /* ============================================================
+     Word 导出
+     ============================================================ */
   function bodyPt() { return Math.round(Math.min(16, Math.max(10.5, typo.size * 0.62)) * 2); }
   function lineTwips() { return Math.round(360 * typo.lh * (typo.size / 19)); }
 
@@ -1325,8 +1537,9 @@ input[type="range"].slider::-moz-range-thumb {
     var runs = [];
     var re = /(\*\*[^*]+\*\*|__[^_]+__|`[^`]+`|\*[^*]+\*|_[^_]+_|~~[^~]+~~)/g;
     var last = 0, m;
+    var colorHex = (typo.fg || '#222222').replace('#', '').toUpperCase();
     function mk(t, extra) {
-      var o = { text: t, font: fontName, size: (base && base.size) || bodyPt() };
+      var o = { text: t, font: fontName, size: (base && base.size) || bodyPt(), color: colorHex };
       if (base) { for (var k in base) if (k !== 'size') o[k] = base[k]; }
       if (extra) { for (var k2 in extra) o[k2] = extra[k2]; }
       return new docx.TextRun(o);
@@ -1352,14 +1565,14 @@ input[type="range"].slider::-moz-range-thumb {
     var lines = String(text).split(/\r?\n/);
     var kids = [], inCode = false, buf = [];
     var pt = bodyPt(), lt = lineTwips();
+    var colorHex = (typo.fg || '#222222').replace('#', '').toUpperCase();
 
     if (title && title.trim()) {
       kids.push(new P({
-        children: [new docx.TextRun({ text: title.trim(), font: fontName, size: 36, bold: true })],
+        children: [new docx.TextRun({ text: title.trim(), font: fontName, size: 36, bold: true, color: colorHex })],
         spacing: { after: 320, line: lt }
       }));
     }
-
     for (var i = 0; i < lines.length; i++) {
       var L = lines[i], m;
       if (/^\s*```/.test(L)) {
@@ -1373,16 +1586,11 @@ input[type="range"].slider::-moz-range-thumb {
       }
       if (inCode) { buf.push(L); continue; }
       if (!L.trim()) { kids.push(new P({ children: [], spacing: { after: 120 } })); continue; }
-
       m = L.match(/^(#{1,6})\s+(.*)$/);
       if (m) {
         var lv = m[1].length;
         var lvls = [HL.HEADING_1, HL.HEADING_2, HL.HEADING_3, HL.HEADING_4, HL.HEADING_5, HL.HEADING_6];
-        kids.push(new P({
-          heading: lvls[lv - 1],
-          children: parseRuns(m[2], { size: lv === 1 ? 36 : (lv === 2 ? 30 : 26) }),
-          spacing: { before: 240, after: 120, line: lt }
-        }));
+        kids.push(new P({ heading: lvls[lv - 1], children: parseRuns(m[2], { size: lv === 1 ? 36 : (lv === 2 ? 30 : 26) }), spacing: { before: 240, after: 120, line: lt } }));
         continue;
       }
       if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(L)) {
@@ -1396,257 +1604,11 @@ input[type="range"].slider::-moz-range-thumb {
       m = L.match(/^\s*>\s?(.*)$/);
       if (m) {
         kids.push(new P({
-          children: parseRuns(m[1], { italics: true, color: '8C877D' }),
+          children: parseRuns(m[1], { italics: true }),
           indent: { left: 480 },
           border: { left: { style: 'single', size: 12, color: 'DDD8CE', space: 8 } },
           spacing: { after: 120, line: lt }
         }));
         continue;
       }
-      var opts = { children: parseRuns(L), spacing: { after: 160, line: lt } };
-      if (typo.indent) opts.indent = { firstLine: Math.round(pt * 20) };
-      kids.push(new P(opts));
-    }
-
-    var doc = new docx.Document({
-      creator: '宫花红',
-      title: title || '未命名',
-      styles: { default: { document: { run: { font: fontName, size: pt, color: '33322E' }, paragraph: { spacing: { line: lt, after: 160 } } } } },
-      numbering: { config: [{ reference: 'ol', levels: [{ level: 0, format: 'decimal', text: '%1.', alignment: 'start' }] }] },
-      sections: [{
-        properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } },
-        children: kids
-      }]
-    });
-
-    return docx.Packer.toBlob(doc);
-  }
-
-  function buildLegacyDoc(text, title, filename) {
-    var fontName = getFont(typo.font).doc;
-    var pt = Math.min(16, Math.max(10.5, typo.size * 0.62)).toFixed(1);
-    var indent = typo.indent ? 'text-indent:2em;' : '';
-    var html =
-      '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>' + esc(title || '文章') + '</title>' +
-      '<style>@page{size:A4;margin:2.5cm}body{font-family:"' + fontName + '",SimSun,serif;font-size:' + pt + 'pt;line-height:' + typo.lh + ';color:#33322E}' +
-      'h1,h2,h3,h4,h5,h6{font-family:inherit;font-weight:bold}p{' + indent + '}blockquote{border-left:3px solid #ddd8ce;padding-left:12px;color:#8c877d}' +
-      'pre{background:#f5f5f5;padding:10px;font-family:Consolas,monospace;font-size:10.5pt}code{font-family:Consolas,monospace;background:#f1f3ee;padding:1px 3px}' +
-      'hr{border:0;border-top:1px solid #ddd8ce}</style></head><body>' +
-      (title && title.trim() ? '<h1 style="font-size:18pt">' + esc(title.trim()) + '</h1>' : '') +
-      md(text) + '</body></html>';
-    return { blob: new Blob(['\ufeff', html], { type: 'application/msword' }), filename: filename.replace(/\.docx$/, '.doc') };
-  }
-
-  function buildWordFile(text, title) {
-    var filename = (title && title.trim() ? title.trim().slice(0, 30) : '未命名') + '-' + stamp() + '.docx';
-    if (window.docx && window.docx.Packer) {
-      return buildDocx(text, title).then(function (blob) { return { blob: blob, filename: filename }; })
-        .catch(function () { return buildLegacyDoc(text, title, filename); });
-    }
-    return Promise.resolve(buildLegacyDoc(text, title, filename));
-  }
-
-  function downloadBlob(blob, filename) {
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
-  }
-
-  function exportWord() {
-    var text = editor.value;
-    if (!text.trim()) { toast('还没有内容可以导出'); return; }
-    toast('正在生成 Word…');
-    buildWordFile(text, titleInput.value).then(function (r) {
-      downloadBlob(r.blob, r.filename);
-      toast('已导出 ' + r.filename);
-    }).catch(function () { toast('导出失败，请重试'); });
-  }
-
-  function readFile(file) {
-    if (!file) return;
-    var name = (file.name || '').toLowerCase();
-    var isText = /\.(txt|md|markdown|text|json|csv|html?|xml|log|js|css)$/.test(name) || (file.type && file.type.indexOf('text') === 0);
-    if (!isText && !confirm('“' + file.name + '”可能不是纯文本，仍要尝试读取吗？')) return;
-    var reader = new FileReader();
-    reader.onload = function () {
-      var c = String(reader.result || '');
-      if (editor.value.trim()) {
-        var append = confirm('已载入：' + file.name + '\n\n「确定」= 追加到末尾\n「取消」= 替换当前内容');
-        editor.value = append ? editor.value.replace(/\s*$/, '') + '\n\n' + c : c;
-      } else {
-        editor.value = c;
-      }
-      countText(); scheduleLocalSave(); schedulePush();
-      editor.scrollTop = 0;
-      toast('已载入：' + file.name);
-    };
-    reader.onerror = function () { toast('读取失败，请重试'); };
-    reader.readAsText(file, 'UTF-8');
-  }
-
-  editor.addEventListener('input', function () { countText(); scheduleLocalSave(); schedulePush(); });
-  editor.addEventListener('keydown', function (e) {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      var s = this.selectionStart, t = this.selectionEnd;
-      this.value = this.value.slice(0, s) + '  ' + this.value.slice(t);
-      this.selectionStart = this.selectionEnd = s + 2;
-      countText(); scheduleLocalSave(); schedulePush();
-    }
-  });
-  editor.addEventListener('focus', function () {
-    setTimeout(function () { var len = editor.value.length; editor.setSelectionRange(len, len); }, 60);
-  });
-
-  var pushThrottle = null;
-  titleInput.addEventListener('input', function () {
-    scheduleLocalSave();
-    clearTimeout(pushThrottle);
-    pushThrottle = setTimeout(pushTitle, 300);
-  });
-
-  $('toolFont').addEventListener('click', function () { openSheet(sheetFont); });
-  $('toolComment').addEventListener('click', openCommentSheet);
-  $('toolShare').addEventListener('click', function () { updateSharePanel(); openSheet(sheetShare); });
-  $('toolExport').addEventListener('click', exportWord);
-  $('btnShareTop').addEventListener('click', function () { updateSharePanel(); openSheet(sheetShare); });
-  $('btnMenu').addEventListener('click', function () { openSheet(sheetMenu); });
-
-  scrim.addEventListener('click', closeSheet);
-  var closers = document.querySelectorAll('[data-close]');
-  for (var ci = 0; ci < closers.length; ci++) closers[ci].addEventListener('click', closeSheet);
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-      if (previewLayer.classList.contains('show')) { previewLayer.classList.remove('show'); return; }
-      closeSheet();
-      return;
-    }
-    var mod = e.ctrlKey || e.metaKey;
-    if (mod && (e.key === 's' || e.key === 'S')) { e.preventDefault(); persistLocal(); toast('已保存到本机'); }
-  });
-
-  rangeSize.addEventListener('input', function () { typo.size = parseInt(this.value, 10) || DEFAULT_TYPO.size; applyTypo(); saveTypo(); });
-  $('sizeMinus').addEventListener('click', function () { typo.size = Math.max(MIN_SIZE, typo.size - 1); applyTypo(); saveTypo(); });
-  $('sizePlus').addEventListener('click', function () { typo.size = Math.min(MAX_SIZE, typo.size + 1); applyTypo(); saveTypo(); });
-  rangeLh.addEventListener('input', function () { typo.lh = parseFloat(this.value) || DEFAULT_TYPO.lh; applyTypo(); saveTypo(); });
-  swIndent.addEventListener('click', function () { typo.indent = !typo.indent; applyTypo(); saveTypo(); });
-  themeSeg.addEventListener('click', function (e) {
-    var b = e.target.closest('button');
-    if (!b) return;
-    var v = b.getAttribute('data-theme-val');
-    if (!v) return;
-    typo.theme = v; applyTypo(); saveTypo();
-  });
-  $('btnResetTypo').addEventListener('click', function () {
-    typo = Object.assign({}, DEFAULT_TYPO);
-    applyTypo(); saveTypo();
-    toast('已恢复默认设置');
-  });
-
-  if (window.matchMedia) {
-    var mq = window.matchMedia('(prefers-color-scheme: dark)');
-    var onSys = function () { if (typo.theme === 'auto') applyTypo(); };
-    if (mq.addEventListener) mq.addEventListener('change', onSys);
-    else if (mq.addListener) mq.addListener(onSys);
-  }
-
-  btnCreateRoom.addEventListener('click', createRoom);
-  btnCopyLink.addEventListener('click', function () { copyToClipboard(shareLinkInput.value, '链接已复制，发给朋友即可'); });
-  shareLinkInput.addEventListener('click', function () { this.select(); });
-
-  $('miPreview').addEventListener('click', function () {
-    closeSheet();
-    previewDoc.innerHTML = md(editor.value) || '<p style="color:var(--text-3)">还没有内容</p>';
-    previewLayer.classList.add('show');
-  });
-  $('btnClosePreview').addEventListener('click', function () { previewLayer.classList.remove('show'); });
-  $('miCopy').addEventListener('click', function () {
-    closeSheet();
-    if (!editor.value) { toast('还没有内容'); return; }
-    copyToClipboard(editor.value, '已复制全文');
-  });
-  $('miImport').addEventListener('click', function () { closeSheet(); fileInput.click(); });
-  $('miHelp').addEventListener('click', function () {
-    closeSheet();
-    setTimeout(function () {
-      alert(
-        '宫花红 · 使用说明\n\n' +
-        '【写作】\n点顶栏中间可以改标题；正文是一块干净的白纸。\n所有内容都会自动存在本机浏览器里，关掉页面也不会丢。\n\n' +
-        '【排版】\n点底部「字体」可以换字体、字号、行距、首行缩进和主题。\n可选字体：霞鹜文楷、汇文明朝体、筑紫明朝体、宋体、楷体。\n\n' +
-        '【批注】\n先在正文里选中一段文字，再点底部「批注」，就能针对这段写意见。\n\n' +
-        '【协作】\n点底部「分享」生成链接，把链接发给朋友，\n对方打开就能和你同时编辑同一篇文档，并互相看到批注。\n\n' +
-        '【导出】\n点底部「导出」保存为 Word 文档。'
-      );
-    }, 220);
-  });
-  $('miClear').addEventListener('click', function () {
-    closeSheet();
-    if (!editor.value) { toast('已经是空的了'); return; }
-    setTimeout(function () {
-      if (confirm('确定清空正文吗？此操作不可撤销。')) {
-        editor.value = '';
-        countText(); scheduleLocalSave(); schedulePush();
-        toast('已清空');
-      }
-    }, 220);
-  });
-
-  fileInput.addEventListener('change', function (e) {
-    var f = e.target.files && e.target.files[0];
-    readFile(f); e.target.value = '';
-  });
-
-  ['dragover', 'drop'].forEach(function (ev) {
-    document.addEventListener(ev, function (e) { e.preventDefault(); });
-  });
-  document.addEventListener('drop', function (e) {
-    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-    if (f) readFile(f);
-  });
-
-  document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'hidden') { persistLocal(); pushContent(); }
-  });
-  window.addEventListener('beforeunload', persistLocal);
-
-  (function init() {
-    initSelf();
-    loadTypo();
-    buildFontList();
-    applyTypo();
-    renderComments();
-
-    var room = '';
-    try { room = new URL(window.location.href).searchParams.get('room') || ''; } catch (e) {}
-
-    if (room && /^[A-Za-z0-9_-]{4,32}$/.test(room)) {
-      connectRoom(room);
-      updateSharePanel();
-    } else {
-      try {
-        var raw = localStorage.getItem(LOCAL_KEY);
-        if (raw) {
-          var o = JSON.parse(raw);
-          if (o) {
-            if (typeof o.title === 'string') titleInput.value = o.title;
-            if (typeof o.content === 'string') editor.value = o.content;
-          }
-        }
-      } catch (e) {}
-      countText();
-      updateSharePanel();
-    }
-
-    if (window.innerWidth >= 720) {
-      editor.focus();
-      editor.setSelectionRange(editor.value.length, editor.value.length);
-    }
-  })();
-
-})();
-</script>
-</body>
-</html>
+      var opts = { children: parseRuns(L),
