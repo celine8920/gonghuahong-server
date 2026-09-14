@@ -1,6 +1,8 @@
 const express = require('express');
 const http = require('http');
 const { WebSocketServer } = require('ws');
+const DiffMatchPatch = require('diff-match-patch');
+const dmp = new DiffMatchPatch();
 
 const app = express();
 app.use(express.static(__dirname));
@@ -48,9 +50,20 @@ wss.on('connection', (ws, req) => {
     try { msg = JSON.parse(raw); } catch (e) { return; }
     const from = ws.clientId;
 
-    if (msg.type === 'text') {
-      doc.content = String(msg.content || '');
-      broadcast(room, { type: 'text', content: doc.content, from }, ws);
+    if (msg.type === 'op') {
+      try {
+        const patches = dmp.patch_fromText(msg.patch);
+        const result = dmp.patch_apply(patches, doc.content);
+        const newText = result[0];
+        const ok = result[1].every(r => r);
+        if (ok) {
+          doc.content = newText;
+          broadcast(room, { type: 'op', patch: msg.patch, from }, ws);
+        } else {
+          /* 应用失败：把当前权威内容推回给发消息的人 */
+          ws.send(JSON.stringify({ type: 'resync', content: doc.content }));
+        }
+      } catch (e) {}
     } else if (msg.type === 'title') {
       doc.title = String(msg.title || '');
       broadcast(room, { type: 'title', title: doc.title, from }, ws);
