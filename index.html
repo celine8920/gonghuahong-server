@@ -8,20 +8,16 @@
 <meta name="apple-mobile-web-app-title" content="宫花红">
 <title>宫花红</title>
 
-<!-- 霞鹜文楷（屏幕阅读版） -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.css">
-<!-- Word 导出库 -->
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 
 <style>
-/* ================= 自定义字体 ================= */
 @font-face {
   font-family: "汇文明朝体";
   src: url("./fonts/Huiwen-mincho.otf") format("opentype");
   font-display: swap;
 }
 
-/* ================= 设计变量 ================= */
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
@@ -37,7 +33,6 @@
   --accent-strong: #3A7359;
   --danger: #C25B4E;
   --shadow: 0 8px 30px rgba(60,50,30,.13);
-
   --font-ui: -apple-system, BlinkMacSystemFont, "PingFang SC",
              "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
   --font-writer: "LXGW WenKai Screen", "LXGW WenKai", "汇文明朝体",
@@ -46,24 +41,16 @@
   --writer-size: 19px;
   --writer-lh: 1.95;
   --writer-indent: 0em;
-
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
 }
 
 [data-theme="dark"] {
-  --bg: #17171A;
-  --bg-elev: #202024;
-  --bg-sunken: #131316;
-  --text: #D6D3CC;
-  --text-2: #7E7A72;
-  --text-3: #57544D;
-  --line: #2B2B31;
-  --accent: #6FB894;
-  --accent-soft: rgba(111,184,148,.13);
-  --accent-strong: #8ACCA9;
-  --danger: #E08375;
-  --shadow: 0 10px 34px rgba(0,0,0,.55);
+  --bg: #17171A; --bg-elev: #202024; --bg-sunken: #131316;
+  --text: #D6D3CC; --text-2: #7E7A72; --text-3: #57544D;
+  --line: #2B2B31; --accent: #6FB894;
+  --accent-soft: rgba(111,184,148,.13); --accent-strong: #8ACCA9;
+  --danger: #E08375; --shadow: 0 10px 34px rgba(0,0,0,.55);
 }
 
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
@@ -80,61 +67,33 @@ body {
 }
 
 button, input, textarea {
-  font-family: inherit;
-  color: inherit;
+  font-family: inherit; color: inherit;
   -webkit-tap-highlight-color: transparent;
 }
 button { border: 0; background: transparent; cursor: pointer; }
 
-/* ================= 骨架 ================= */
-.app {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-}
+.app { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); }
 
-/* ---------- 顶栏 ---------- */
 .topbar {
-  flex: 0 0 auto;
-  height: 52px;
-  padding: var(--safe-t) 4px 0;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  background: var(--bg);
-  position: relative;
-  z-index: 20;
+  flex: 0 0 auto; height: 52px; padding: var(--safe-t) 4px 0;
+  display: flex; align-items: center; gap: 2px;
+  background: var(--bg); position: relative; z-index: 20;
 }
 
 .title-input {
-  flex: 1 1 auto;
-  min-width: 0;
-  height: 40px;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  font-family: var(--font-writer);
-  font-size: 17px;
-  font-weight: 500;
-  text-align: center;
-  color: var(--text);
-  letter-spacing: .02em;
-  padding: 0 6px;
-  border-radius: 8px;
+  flex: 1 1 auto; min-width: 0; height: 40px;
+  border: 0; outline: 0; background: transparent;
+  font-family: var(--font-writer); font-size: 17px; font-weight: 500;
+  text-align: center; color: var(--text);
+  letter-spacing: .02em; padding: 0 6px; border-radius: 8px;
 }
 .title-input::placeholder { color: var(--text-3); font-weight: 400; }
 .title-input:focus { background: var(--bg-sunken); }
 
 .icon-btn {
-  flex: 0 0 auto;
-  width: 40px; height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  color: var(--text-2);
+  flex: 0 0 auto; width: 40px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; color: var(--text-2);
   transition: background .15s, color .15s;
 }
 .icon-btn:active { background: var(--bg-sunken); }
@@ -144,191 +103,107 @@ button { border: 0; background: transparent; cursor: pointer; }
 .peers.show { display: inline-flex; }
 
 .peer-dot {
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  margin-left: -8px;
+  width: 26px; height: 26px; border-radius: 50%; margin-left: -8px;
   border: 2px solid var(--bg);
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 600; color: #fff;
-  user-select: none;
+  font-size: 11px; font-weight: 600; color: #fff; user-select: none;
 }
 .peer-dot:first-child { margin-left: 0; }
 
-/* ---------- 编辑区 ---------- */
-.editor-wrap {
-  flex: 1 1 auto;
-  min-height: 0;
-  position: relative;
-  display: flex;
-  justify-content: center;
-}
+.editor-wrap { flex: 1 1 auto; min-height: 0; position: relative; display: flex; justify-content: center; }
 
 .editor {
-  width: 100%;
-  max-width: 760px;
-  height: 100%;
-  border: 0;
-  outline: 0;
-  resize: none;
-  background: transparent;
+  width: 100%; max-width: 760px; height: 100%;
+  border: 0; outline: 0; resize: none; background: transparent;
   padding: 14px 22px 90px;
   font-family: var(--font-writer);
-  font-size: var(--writer-size);
-  line-height: var(--writer-lh);
-  color: var(--text);
-  letter-spacing: .02em;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  font-size: var(--writer-size); line-height: var(--writer-lh);
+  color: var(--text); letter-spacing: .02em;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
   text-indent: var(--writer-indent);
 }
-.editor::placeholder {
-  color: var(--text-3);
-  font-size: .88em;
-  line-height: 1.8;
-  text-indent: 0;
-  letter-spacing: 0;
-}
+.editor::placeholder { color: var(--text-3); font-size: .88em; line-height: 1.8; text-indent: 0; letter-spacing: 0; }
 .editor::-webkit-scrollbar { width: 4px; }
 .editor::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 .editor::-webkit-scrollbar-track { background: transparent; }
 
 .counter {
-  position: absolute;
-  right: 14px;
-  bottom: 12px;
-  font-size: 12px;
-  color: var(--text-3);
-  pointer-events: none;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: .3px;
-  background: var(--bg);
-  padding: 2px 6px;
-  border-radius: 8px;
-  opacity: .9;
+  position: absolute; right: 14px; bottom: 12px;
+  font-size: 12px; color: var(--text-3); pointer-events: none;
+  font-variant-numeric: tabular-nums; letter-spacing: .3px;
+  background: var(--bg); padding: 2px 6px; border-radius: 8px; opacity: .9;
 }
 
-/* ---------- 底部工具栏 ---------- */
 .toolbar {
-  flex: 0 0 auto;
-  height: calc(58px + var(--safe-b));
+  flex: 0 0 auto; height: calc(58px + var(--safe-b));
   padding: 0 8px var(--safe-b);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  background: var(--bg);
-  border-top: 1px solid var(--line);
-  position: relative;
-  z-index: 20;
+  display: flex; align-items: center; justify-content: space-around;
+  background: var(--bg); border-top: 1px solid var(--line);
+  position: relative; z-index: 20;
 }
 
 .tool {
-  flex: 1 1 0;
-  min-width: 0;
-  height: 52px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  border-radius: 12px;
-  color: var(--text-2);
-  font-size: 10.5px;
-  letter-spacing: .5px;
-  transition: color .15s, background .15s;
-  position: relative;
+  flex: 1 1 0; min-width: 0; height: 52px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2px; border-radius: 12px;
+  color: var(--text-2); font-size: 10.5px; letter-spacing: .5px;
+  transition: color .15s, background .15s; position: relative;
 }
 .tool:active { background: var(--bg-sunken); }
 .tool.on { color: var(--accent); }
 .tool svg { display: block; }
 
 .tool .badge {
-  position: absolute;
-  top: 5px;
-  left: 50%;
-  margin-left: 4px;
-  min-width: 15px; height: 15px;
-  padding: 0 4px;
-  border-radius: 8px;
-  background: var(--danger);
-  color: #fff;
-  font-size: 10px;
-  line-height: 15px;
-  text-align: center;
-  font-weight: 600;
+  position: absolute; top: 5px; left: 50%; margin-left: 4px;
+  min-width: 15px; height: 15px; padding: 0 4px; border-radius: 8px;
+  background: var(--danger); color: #fff;
+  font-size: 10px; line-height: 15px; text-align: center; font-weight: 600;
 }
 
-/* ================= 弹层通用 ================= */
 .scrim {
-  position: fixed;
-  inset: 0;
-  background: rgba(30,25,15,.38);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .24s;
-  z-index: 60;
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(1px);
+  position: fixed; inset: 0; background: rgba(30,25,15,.38);
+  opacity: 0; pointer-events: none; transition: opacity .24s;
+  z-index: 60; backdrop-filter: blur(1px); -webkit-backdrop-filter: blur(1px);
 }
 .scrim.show { opacity: 1; pointer-events: auto; }
 
 .sheet {
-  position: fixed;
-  z-index: 61;
+  position: fixed; z-index: 61;
   left: 0; right: 0; bottom: 0;
   background: var(--bg-elev);
   border-radius: 20px 20px 0 0;
   box-shadow: var(--shadow);
   transform: translateY(102%);
   transition: transform .3s cubic-bezier(.32,.72,0,1);
-  display: flex;
-  flex-direction: column;
-  max-height: 88dvh;
-  padding-bottom: var(--safe-b);
-  overflow: hidden;
-  pointer-events: none;   /* ← 关键修复：隐藏时不吃点击 */
+  display: flex; flex-direction: column;
+  max-height: 88dvh; padding-bottom: var(--safe-b);
+  overflow: hidden; pointer-events: none;
 }
 .sheet.show { transform: translateY(0); pointer-events: auto; }
 
-.sheet-grip {
-  flex: 0 0 auto;
-  padding: 9px 0 3px;
-  display: flex;
-  justify-content: center;
-}
-.sheet-grip::after {
-  content: "";
-  width: 36px; height: 4px;
-  border-radius: 2px;
-  background: var(--line);
-}
+.sheet-grip { flex: 0 0 auto; padding: 9px 0 3px; display: flex; justify-content: center; }
+.sheet-grip::after { content: ""; width: 36px; height: 4px; border-radius: 2px; background: var(--line); }
 
 .sheet-head {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 8px 10px 20px;
+  flex: 0 0 auto; display: flex; align-items: center;
+  gap: 8px; padding: 6px 8px 10px 20px;
 }
 .sheet-title { flex: 1 1 auto; font-size: 16px; font-weight: 600; letter-spacing: .3px; }
 .sheet-sub { font-size: 12px; color: var(--text-3); margin-right: 4px; }
 
 .sheet-body {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 2px 16px 20px;
-  overscroll-behavior: contain;
+  padding: 2px 16px 20px; overscroll-behavior: contain;
 }
 
 @media (min-width: 720px) {
   .sheet {
     left: 50%; right: auto; bottom: auto; top: 50%;
     width: min(460px, calc(100vw - 48px));
-    max-height: min(78vh, 720px);
-    border-radius: 20px;
-    transform: translate(-50%, -46%) scale(.97);
-    opacity: 0;
+    max-height: min(78vh, 720px); border-radius: 20px;
+    transform: translate(-50%, -46%) scale(.97); opacity: 0;
     transition: opacity .22s, transform .22s;
   }
   .sheet.show { transform: translate(-50%, -50%) scale(1); opacity: 1; }
@@ -336,52 +211,29 @@ button { border: 0; background: transparent; cursor: pointer; }
   .sheet-head { padding-top: 16px; }
 }
 
-/* ================= 设置面板 ================= */
 .group { margin-bottom: 24px; }
 .group:last-child { margin-bottom: 4px; }
 
 .group-label {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  color: var(--text-3);
-  margin: 0 4px 10px;
+  display: flex; align-items: baseline; justify-content: space-between;
+  font-size: 12px; font-weight: 600; letter-spacing: 1px;
+  color: var(--text-3); margin: 0 4px 10px;
 }
-.group-label .val {
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
-}
+.group-label .val { font-size: 13px; font-weight: 500; letter-spacing: 0; color: var(--accent); font-variant-numeric: tabular-nums; }
 
 .font-list { display: flex; flex-direction: column; gap: 3px; }
 
 .font-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 56px;
-  padding: 10px 12px;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  text-align: left;
-  transition: background .15s, border-color .15s;
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; min-height: 56px; padding: 10px 12px;
+  border: 1px solid transparent; border-radius: 12px;
+  text-align: left; transition: background .15s, border-color .15s;
 }
 .font-option:active { background: var(--bg-sunken); }
-.font-option.active {
-  background: var(--accent-soft);
-  border-color: rgba(74,139,111,.3);
-}
+.font-option.active { background: var(--accent-soft); border-color: rgba(74,139,111,.3); }
 
 .fo-check {
-  flex: 0 0 auto;
-  width: 20px; height: 20px;
-  border-radius: 50%;
+  flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%;
   border: 2px solid var(--text-3);
   display: flex; align-items: center; justify-content: center;
   color: #fff; font-size: 11px; line-height: 1;
@@ -393,329 +245,140 @@ button { border: 0; background: transparent; cursor: pointer; }
 
 .fo-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .fo-name { font-size: 12px; color: var(--text-3); letter-spacing: .3px; }
-.fo-sample {
-  font-size: 18px;
-  line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.fo-sample { font-size: 18px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .slider-row { display: flex; align-items: center; gap: 10px; padding: 0 2px; }
 
 .step-btn {
-  flex: 0 0 auto;
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background: var(--bg-sunken);
-  color: var(--text-2);
+  flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--bg-sunken); color: var(--text-2);
   display: flex; align-items: center; justify-content: center;
-  font-family: Georgia, serif;
-  transition: background .15s;
-  user-select: none;
+  font-family: Georgia, serif; transition: background .15s; user-select: none;
 }
 .step-btn:active { background: var(--line); }
 .step-btn .s { font-size: 12px; }
 .step-btn .l { font-size: 20px; }
 
 input[type="range"].slider {
-  flex: 1 1 auto;
-  -webkit-appearance: none;
-  appearance: none;
-  height: 44px;
-  background: transparent;
-  margin: 0;
-  cursor: pointer;
+  flex: 1 1 auto; -webkit-appearance: none; appearance: none;
+  height: 44px; background: transparent; margin: 0; cursor: pointer;
 }
-input[type="range"].slider::-webkit-slider-runnable-track {
-  height: 4px; border-radius: 2px; background: var(--line);
-}
+input[type="range"].slider::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--line); }
 input[type="range"].slider::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
-  width: 22px; height: 22px; margin-top: -9px;
-  border-radius: 50%; background: var(--accent);
-  border: 2px solid var(--bg-elev);
+  width: 22px; height: 22px; margin-top: -9px; border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--bg-elev);
   box-shadow: 0 1px 5px rgba(0,0,0,.25);
 }
-input[type="range"].slider::-moz-range-track {
-  height: 4px; border-radius: 2px; background: var(--line);
-}
+input[type="range"].slider::-moz-range-track { height: 4px; border-radius: 2px; background: var(--line); }
 input[type="range"].slider::-moz-range-thumb {
   width: 20px; height: 20px; border-radius: 50%;
   background: var(--accent); border: 2px solid var(--bg-elev);
   box-shadow: 0 1px 5px rgba(0,0,0,.25);
 }
 
-.switch-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 52px;
-  padding: 0 4px;
-}
+.switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 0 4px; }
 .switch-label { font-size: 15px; }
 .switch-label small { display: block; font-size: 12px; color: var(--text-3); margin-top: 2px; }
 
 .switch {
-  flex: 0 0 auto;
-  position: relative;
-  width: 50px; height: 30px;
-  border-radius: 15px;
-  background: var(--line);
-  transition: background .2s;
+  flex: 0 0 auto; position: relative; width: 50px; height: 30px;
+  border-radius: 15px; background: var(--line); transition: background .2s;
 }
 .switch::after {
-  content: "";
-  position: absolute;
-  top: 3px; left: 3px;
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+  content: ""; position: absolute; top: 3px; left: 3px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.25);
   transition: transform .2s;
 }
 .switch.on { background: var(--accent); }
 .switch.on::after { transform: translateX(20px); }
 
-.segmented {
-  display: flex;
-  gap: 4px;
-  padding: 4px;
-  background: var(--bg-sunken);
-  border-radius: 12px;
-}
+.segmented { display: flex; gap: 4px; padding: 4px; background: var(--bg-sunken); border-radius: 12px; }
 .segmented button {
-  flex: 1 1 0;
-  height: 40px;
-  border-radius: 9px;
-  font-size: 14px;
-  color: var(--text-2);
+  flex: 1 1 0; height: 40px; border-radius: 9px;
+  font-size: 14px; color: var(--text-2);
   transition: background .18s, color .18s;
 }
-.segmented button.on {
-  background: var(--bg-elev);
-  color: var(--text);
-  font-weight: 500;
-  box-shadow: 0 1px 4px rgba(0,0,0,.09);
-}
+.segmented button.on { background: var(--bg-elev); color: var(--text); font-weight: 500; box-shadow: 0 1px 4px rgba(0,0,0,.09); }
 
 .try-box {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 16px 18px;
-  background: var(--bg);
+  border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px 18px; background: var(--bg);
   font-family: var(--font-writer);
-  font-size: var(--writer-size);
-  line-height: var(--writer-lh);
+  font-size: var(--writer-size); line-height: var(--writer-lh);
   text-indent: var(--writer-indent);
-  color: var(--text);
-  word-break: break-all;
+  color: var(--text); word-break: break-all;
 }
 
 .big-btn {
-  width: 100%;
-  height: 50px;
-  border-radius: 14px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 16px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: background .15s;
+  width: 100%; height: 50px; border-radius: 14px;
+  background: var(--accent); color: #fff;
+  font-size: 16px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; transition: background .15s;
 }
 .big-btn:active { background: var(--accent-strong); }
 .big-btn.ghost { background: var(--bg-sunken); color: var(--text); }
 
-/* ================= 批注 ================= */
 .comment-list { display: flex; flex-direction: column; gap: 10px; }
-
 .comment {
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 12px 14px;
-  background: var(--bg);
+  border: 1px solid var(--line); border-radius: 14px;
+  padding: 12px 14px; background: var(--bg);
   transition: opacity .2s;
 }
 .comment.resolved { opacity: .5; }
 
 .comment-quote {
-  font-family: var(--font-writer);
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--text-2);
-  border-left: 3px solid var(--line);
-  padding-left: 10px;
-  margin-bottom: 8px;
-  max-height: 3.2em;
-  overflow: hidden;
+  font-family: var(--font-writer); font-size: 14px; line-height: 1.6;
+  color: var(--text-2); border-left: 3px solid var(--line);
+  padding-left: 10px; margin-bottom: 8px; max-height: 3.2em; overflow: hidden;
 }
-
-.comment-text {
-  font-size: 15px;
-  line-height: 1.65;
-  color: var(--text);
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.comment-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  font-size: 12px;
-  color: var(--text-3);
-}
+.comment-text { font-size: 15px; line-height: 1.65; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+.comment-meta { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--text-3); }
 .comment-meta .who { font-weight: 600; }
 .comment-meta .sp { flex: 1 1 auto; }
 
-.mini-btn {
-  height: 30px;
-  padding: 0 10px;
-  border-radius: 15px;
-  font-size: 12.5px;
-  color: var(--accent);
-  transition: background .15s;
-}
+.mini-btn { height: 30px; padding: 0 10px; border-radius: 15px; font-size: 12.5px; color: var(--accent); transition: background .15s; }
 .mini-btn:active { background: var(--accent-soft); }
 .mini-btn.danger { color: var(--danger); }
 .mini-btn.danger:active { background: rgba(194,91,78,.1); }
 
-.empty-tip {
-  text-align: center;
-  color: var(--text-3);
-  font-size: 14px;
-  line-height: 1.9;
-  padding: 34px 20px;
-}
+.empty-tip { text-align: center; color: var(--text-3); font-size: 14px; line-height: 1.9; padding: 34px 20px; }
 
-.composer {
-  border: 1px solid var(--accent);
-  border-radius: 14px;
-  padding: 12px 14px;
-  background: var(--bg);
-  margin-bottom: 12px;
-}
+.composer { border: 1px solid var(--accent); border-radius: 14px; padding: 12px 14px; background: var(--bg); margin-bottom: 12px; }
 .composer .quote {
-  font-family: var(--font-writer);
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--text-2);
-  border-left: 3px solid var(--accent);
-  padding-left: 10px;
-  margin-bottom: 10px;
-  max-height: 4em;
-  overflow: hidden;
+  font-family: var(--font-writer); font-size: 14px; line-height: 1.6;
+  color: var(--text-2); border-left: 3px solid var(--accent);
+  padding-left: 10px; margin-bottom: 10px; max-height: 4em; overflow: hidden;
 }
 .composer textarea {
-  width: 100%;
-  min-height: 66px;
-  border: 0;
-  outline: 0;
-  resize: none;
-  background: transparent;
-  font-size: 15px;
-  line-height: 1.65;
-  color: var(--text);
+  width: 100%; min-height: 66px; border: 0; outline: 0; resize: none;
+  background: transparent; font-size: 15px; line-height: 1.65; color: var(--text);
 }
 .composer textarea::placeholder { color: var(--text-3); }
-.composer-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 4px;
-  margin-top: 6px;
-}
+.composer-actions { display: flex; justify-content: flex-end; gap: 4px; margin-top: 6px; }
 
-/* ================= 分享 ================= */
-.share-status {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: var(--bg-sunken);
-  margin-bottom: 16px;
-}
-.share-status .dot {
-  width: 9px; height: 9px;
-  border-radius: 50%;
-  background: var(--text-3);
-  flex: 0 0 auto;
-}
-.share-status.online .dot {
-  background: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-soft);
-}
+.share-status { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-radius: 14px; background: var(--bg-sunken); margin-bottom: 16px; }
+.share-status .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--text-3); flex: 0 0 auto; }
+.share-status.online .dot { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
 .share-status .txt { flex: 1 1 auto; font-size: 14px; line-height: 1.5; }
 .share-status .txt small { display: block; color: var(--text-3); font-size: 12px; margin-top: 2px; }
 
-.link-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 6px 6px 6px 14px;
-  background: var(--bg);
-  margin-bottom: 14px;
-}
-.link-box input {
-  flex: 1 1 auto;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  font-size: 13.5px;
-  color: var(--text-2);
-  font-family: ui-monospace, Menlo, Consolas, monospace;
-  text-overflow: ellipsis;
-}
-.link-box .copy {
-  flex: 0 0 auto;
-  height: 38px;
-  padding: 0 16px;
-  border-radius: 10px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
-}
+.link-box { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 12px; padding: 6px 6px 6px 14px; background: var(--bg); margin-bottom: 14px; }
+.link-box input { flex: 1 1 auto; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 13.5px; color: var(--text-2); font-family: ui-monospace, Menlo, Consolas, monospace; text-overflow: ellipsis; }
+.link-box .copy { flex: 0 0 auto; height: 38px; padding: 0 16px; border-radius: 10px; background: var(--accent); color: #fff; font-size: 14px; font-weight: 500; }
 .link-box .copy:active { background: var(--accent-strong); }
 
-.hint {
-  font-size: 12.5px;
-  line-height: 1.8;
-  color: var(--text-3);
-  margin-top: 14px;
-  padding: 0 2px;
-}
-.hint code {
-  font-family: ui-monospace, Menlo, Consolas, monospace;
-  background: var(--bg-sunken);
-  padding: 1px 5px;
-  border-radius: 5px;
-  font-size: 12px;
-  color: var(--text-2);
-}
+.hint { font-size: 12.5px; line-height: 1.8; color: var(--text-3); margin-top: 14px; padding: 0 2px; }
+.hint code { font-family: ui-monospace, Menlo, Consolas, monospace; background: var(--bg-sunken); padding: 1px 5px; border-radius: 5px; font-size: 12px; color: var(--text-2); }
 
-/* ================= 更多菜单 ================= */
 .menu-list { display: flex; flex-direction: column; gap: 2px; }
-
 .menu-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  min-height: 54px;
-  padding: 0 12px;
-  border-radius: 12px;
-  text-align: left;
-  font-size: 15.5px;
-  color: var(--text);
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; min-height: 54px; padding: 0 12px;
+  border-radius: 12px; text-align: left;
+  font-size: 15.5px; color: var(--text);
   transition: background .15s;
 }
 .menu-item:active { background: var(--bg-sunken); }
@@ -723,104 +386,43 @@ input[type="range"].slider::-moz-range-thumb {
 .menu-item.danger { color: var(--danger); }
 .menu-item.danger svg { color: var(--danger); }
 
-/* ================= 预览浮层 ================= */
 .preview-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 70;
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
+  position: fixed; inset: 0; z-index: 70; background: var(--bg);
+  display: flex; flex-direction: column;
   transform: translateY(100%);
   transition: transform .3s cubic-bezier(.32,.72,0,1);
-  pointer-events: none;   /* ← 关键修复 */
+  pointer-events: none;
 }
 .preview-layer.show { transform: translateY(0); pointer-events: auto; }
 
-.preview-bar {
-  flex: 0 0 auto;
-  height: calc(52px + var(--safe-t));
-  padding: var(--safe-t) 8px 0 16px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--line);
-}
+.preview-bar { flex: 0 0 auto; height: calc(52px + var(--safe-t)); padding: var(--safe-t) 8px 0 16px; display: flex; align-items: center; border-bottom: 1px solid var(--line); }
 .preview-bar .t { flex: 1 1 auto; font-size: 16px; font-weight: 600; }
 
-.preview-scroll {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 22px 24px calc(48px + var(--safe-b));
-}
-.preview-doc {
-  max-width: 720px;
-  margin: 0 auto;
-  font-family: var(--font-writer);
-  font-size: var(--writer-size);
-  line-height: var(--writer-lh);
-  color: var(--text);
-}
+.preview-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 22px 24px calc(48px + var(--safe-b)); }
+.preview-doc { max-width: 720px; margin: 0 auto; font-family: var(--font-writer); font-size: var(--writer-size); line-height: var(--writer-lh); color: var(--text); }
 .preview-doc > *:first-child { margin-top: 0; }
-.preview-doc h1, .preview-doc h2, .preview-doc h3,
-.preview-doc h4, .preview-doc h5, .preview-doc h6 {
-  font-family: inherit;
-  font-weight: 700;
-  line-height: 1.45;
-  margin: 1.5em 0 .6em;
-  letter-spacing: .03em;
-}
+.preview-doc h1, .preview-doc h2, .preview-doc h3, .preview-doc h4, .preview-doc h5, .preview-doc h6 { font-family: inherit; font-weight: 700; line-height: 1.45; margin: 1.5em 0 .6em; letter-spacing: .03em; }
 .preview-doc h1 { font-size: 1.6em; }
 .preview-doc h2 { font-size: 1.36em; }
 .preview-doc h3 { font-size: 1.16em; }
 .preview-doc p { margin: 0 0 1em; }
 .preview-doc ul, .preview-doc ol { margin: 0 0 1em; padding-left: 1.6em; }
-.preview-doc blockquote {
-  margin: 1em 0;
-  padding: 4px 0 4px 16px;
-  border-left: 3px solid var(--line);
-  color: var(--text-2);
-}
-.preview-doc code {
-  font-family: ui-monospace, Menlo, Consolas, monospace;
-  background: var(--bg-sunken);
-  padding: .15em .4em;
-  border-radius: 4px;
-  font-size: .86em;
-}
-.preview-doc pre {
-  font-family: ui-monospace, Menlo, Consolas, monospace;
-  background: var(--bg-sunken);
-  border-radius: 10px;
-  padding: 14px 16px;
-  overflow-x: auto;
-  font-size: .84em;
-  line-height: 1.7;
-}
+.preview-doc blockquote { margin: 1em 0; padding: 4px 0 4px 16px; border-left: 3px solid var(--line); color: var(--text-2); }
+.preview-doc code { font-family: ui-monospace, Menlo, Consolas, monospace; background: var(--bg-sunken); padding: .15em .4em; border-radius: 4px; font-size: .86em; }
+.preview-doc pre { font-family: ui-monospace, Menlo, Consolas, monospace; background: var(--bg-sunken); border-radius: 10px; padding: 14px 16px; overflow-x: auto; font-size: .84em; line-height: 1.7; }
 .preview-doc pre code { background: none; padding: 0; }
 .preview-doc hr { border: 0; border-top: 1px solid var(--line); margin: 1.8em 0; }
 .preview-doc a { color: var(--accent); }
 
-/* ================= Toast ================= */
 .toast {
-  position: fixed;
-  left: 50%;
-  bottom: calc(84px + var(--safe-b));
+  position: fixed; left: 50%; bottom: calc(84px + var(--safe-b));
   transform: translate(-50%, 14px);
-  background: rgba(38,34,26,.93);
-  color: #fff;
-  font-size: 14px;
-  line-height: 1.5;
-  padding: 11px 20px;
-  border-radius: 12px;
-  box-shadow: 0 6px 22px rgba(0,0,0,.25);
-  opacity: 0;
-  pointer-events: none;
+  background: rgba(38,34,26,.93); color: #fff;
+  font-size: 14px; line-height: 1.5; padding: 11px 20px;
+  border-radius: 12px; box-shadow: 0 6px 22px rgba(0,0,0,.25);
+  opacity: 0; pointer-events: none;
   transition: opacity .22s, transform .22s;
-  z-index: 200;
-  max-width: 82vw;
-  text-align: center;
+  z-index: 200; max-width: 82vw; text-align: center;
 }
 [data-theme="dark"] .toast { background: rgba(232,230,224,.94); color: #1A1A1A; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
@@ -837,23 +439,19 @@ input[type="range"].slider::-moz-range-thumb {
 
 <div class="app">
 
-  <!-- ============ 顶栏 ============ -->
   <header class="topbar">
     <button class="icon-btn" type="button" id="btnMenu" aria-label="更多">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
         <path d="M4 7h16M4 12h16M4 17h16"/>
       </svg>
     </button>
 
-    <input class="title-input" id="titleInput" type="text"
-           placeholder="无标题" maxlength="80" autocomplete="off" aria-label="文章标题">
+    <input class="title-input" id="titleInput" type="text" placeholder="无标题" maxlength="80" autocomplete="off" aria-label="文章标题">
 
     <div class="peers" id="peers" aria-label="协作者"></div>
 
     <button class="icon-btn" type="button" id="btnShareTop" aria-label="分享协作">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="18" cy="5.5" r="2.6"/>
         <circle cx="6" cy="12" r="2.6"/>
         <circle cx="18" cy="18.5" r="2.6"/>
@@ -862,26 +460,21 @@ input[type="range"].slider::-moz-range-thumb {
     </button>
   </header>
 
-  <!-- ============ 编辑区 ============ -->
   <div class="editor-wrap">
     <textarea class="editor" id="editor" spellcheck="false" placeholder="开始写点什么…"></textarea>
     <div class="counter" id="counter">0 字</div>
   </div>
 
-  <!-- ============ 底部工具栏 ============ -->
   <nav class="toolbar">
     <button class="tool" type="button" id="toolFont">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 19 11.5 5 18 19"/>
-        <path d="M7.6 14h7.8"/>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 19 11.5 5 18 19"/><path d="M7.6 14h7.8"/>
       </svg>
       <span>字体</span>
     </button>
 
     <button class="tool" type="button" id="toolComment">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20.5 11.6c0 4.2-3.8 7.6-8.5 7.6-1 0-2-.15-2.9-.43L4 20.5l1.4-3.9C4.2 15.3 3.5 13.5 3.5 11.6c0-4.2 3.8-7.6 8.5-7.6s8.5 3.4 8.5 7.6Z"/>
         <path d="M8.5 11.5h7M8.5 8.6h4.6"/>
       </svg>
@@ -890,8 +483,7 @@ input[type="range"].slider::-moz-range-thumb {
     </button>
 
     <button class="tool" type="button" id="toolShare">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="18" cy="5.5" r="2.6"/>
         <circle cx="6" cy="12" r="2.6"/>
         <circle cx="18" cy="18.5" r="2.6"/>
@@ -901,8 +493,7 @@ input[type="range"].slider::-moz-range-thumb {
     </button>
 
     <button class="tool" type="button" id="toolExport">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 4v11"/><path d="m7.6 10.6 4.4 4.4 4.4-4.4"/>
         <path d="M4.5 16.5V19A1.5 1.5 0 0 0 6 20.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"/>
       </svg>
@@ -911,17 +502,14 @@ input[type="range"].slider::-moz-range-thumb {
   </nav>
 </div>
 
-<!-- ============ 遮罩 ============ -->
 <div class="scrim" id="scrim"></div>
 
-<!-- ============ 字体与排版 ============ -->
 <section class="sheet" id="sheetFont" role="dialog" aria-modal="true" aria-label="字体与排版">
   <div class="sheet-grip"></div>
   <div class="sheet-head">
     <span class="sheet-title">字体与排版</span>
     <button class="icon-btn" type="button" data-close aria-label="关闭">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
         <path d="M6 6l12 12M18 6 6 18"/>
       </svg>
     </button>
@@ -979,15 +567,13 @@ input[type="range"].slider::-moz-range-thumb {
   </div>
 </section>
 
-<!-- ============ 批注 ============ -->
 <section class="sheet" id="sheetComment" role="dialog" aria-modal="true" aria-label="批注">
   <div class="sheet-grip"></div>
   <div class="sheet-head">
     <span class="sheet-title">批注</span>
     <span class="sheet-sub" id="commentCount"></span>
     <button class="icon-btn" type="button" data-close aria-label="关闭">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
         <path d="M6 6l12 12M18 6 6 18"/>
       </svg>
     </button>
@@ -998,14 +584,12 @@ input[type="range"].slider::-moz-range-thumb {
   </div>
 </section>
 
-<!-- ============ 分享 ============ -->
 <section class="sheet" id="sheetShare" role="dialog" aria-modal="true" aria-label="分享协作">
   <div class="sheet-grip"></div>
   <div class="sheet-head">
     <span class="sheet-title">分享协作</span>
     <button class="icon-btn" type="button" data-close aria-label="关闭">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
         <path d="M6 6l12 12M18 6 6 18"/>
       </svg>
     </button>
@@ -1027,8 +611,7 @@ input[type="range"].slider::-moz-range-thumb {
     </div>
 
     <button class="big-btn" type="button" id="btnCreateRoom">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 5v14M5 12h14"/>
       </svg>
       开启协作并生成链接
@@ -1038,14 +621,12 @@ input[type="range"].slider::-moz-range-thumb {
   </div>
 </section>
 
-<!-- ============ 更多 ============ -->
 <section class="sheet" id="sheetMenu" role="dialog" aria-modal="true" aria-label="更多">
   <div class="sheet-grip"></div>
   <div class="sheet-head">
     <span class="sheet-title">更多</span>
     <button class="icon-btn" type="button" data-close aria-label="关闭">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
         <path d="M6 6l12 12M18 6 6 18"/>
       </svg>
     </button>
@@ -1053,8 +634,7 @@ input[type="range"].slider::-moz-range-thumb {
   <div class="sheet-body">
     <div class="menu-list">
       <button class="menu-item" type="button" id="miPreview">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/>
           <circle cx="12" cy="12" r="3"/>
         </svg>
@@ -1062,8 +642,7 @@ input[type="range"].slider::-moz-range-thumb {
       </button>
 
       <button class="menu-item" type="button" id="miCopy">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="11" height="11" rx="2"/>
           <path d="M5.5 15H5a1.5 1.5 0 0 1-1.5-1.5V5A1.5 1.5 0 0 1 5 3.5h8.5A1.5 1.5 0 0 1 15 5v.5"/>
         </svg>
@@ -1071,8 +650,7 @@ input[type="range"].slider::-moz-range-thumb {
       </button>
 
       <button class="menu-item" type="button" id="miImport">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 15V4"/><path d="m7.6 8.4 4.4-4.4 4.4 4.4"/>
           <path d="M4.5 16.5V19A1.5 1.5 0 0 0 6 20.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"/>
         </svg>
@@ -1080,8 +658,7 @@ input[type="range"].slider::-moz-range-thumb {
       </button>
 
       <button class="menu-item" type="button" id="miHelp">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
           <circle cx="12" cy="12" r="9"/>
           <path d="M9.6 9.3a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.7-.9 1.3v.5"/>
           <circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/>
@@ -1090,8 +667,7 @@ input[type="range"].slider::-moz-range-thumb {
       </button>
 
       <button class="menu-item danger" type="button" id="miClear">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 7h16"/>
           <path d="M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/>
           <path d="M6.5 7l.9 12.1A1.9 1.9 0 0 0 9.3 21h5.4a1.9 1.9 0 0 0 1.9-1.9L17.5 7"/>
@@ -1102,12 +678,10 @@ input[type="range"].slider::-moz-range-thumb {
   </div>
 </section>
 
-<!-- ============ 预览浮层 ============ -->
 <div class="preview-layer" id="previewLayer">
   <div class="preview-bar">
     <button class="icon-btn" type="button" id="btnClosePreview" aria-label="关闭预览">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
         <path d="m14.5 6-6 6 6 6"/>
       </svg>
     </button>
@@ -1125,57 +699,21 @@ input[type="range"].slider::-moz-range-thumb {
 (function () {
   'use strict';
 
-  /* ============================================================
-     服务器地址（你的 Render 后端）
-     ============================================================ */
   var CONFIG = {
     SERVER: 'https://gong-hua-hong.onrender.com'
   };
 
-  /* ============================================================
-     可选字体（5 款）
-     ============================================================ */
   var FONTS = [
-    {
-      id: 'lxgw',
-      name: '霞鹜文楷',
-      doc: 'LXGW WenKai',
-      sample: '宫花红处，春水绿时',
-      stack: '"LXGW WenKai Screen","LXGW WenKai","霞鹜文楷",' +
-             '"Songti SC","Noto Serif SC",serif'
-    },
-    {
-      id: 'huiwen',
-      name: '汇文明朝体',
-      doc: '汇文明朝体',
-      sample: '宫花红处，春水绿时',
-      stack: '"汇文明朝体","Huiwen-Mincho","HuiWenMinChaoTi","HuiwenMincho",' +
-             '"Songti SC","Noto Serif SC",serif'
-    },
-    {
-      id: 'tsukushi',
-      name: '筑紫明朝体',
-      doc: '筑紫明朝',
-      sample: 'いろはにほへと　ちりぬるを',
-      stack: '"筑紫明朝","Tsukushi Mincho","TsukushiMincho",' +
-             '"Tsukushi A Old Mincho","Yu Mincho","游明朝",' +
-             '"Hiragino Mincho ProN","Noto Serif JP",serif'
-    },
-    {
-      id: 'song',
-      name: '宋体',
-      doc: '宋体',
-      sample: '宫花红处，春水绿时',
-      stack: '"宋体",SimSun,"Songti SC","Songti TC","STSong",' +
-             '"Noto Serif SC",serif'
-    },
-    {
-      id: 'kaiti',
-      name: '楷体',
-      doc: '楷体',
-      sample: '宫花红处，春水绿时',
-      stack: '"楷体",KaiTi,"Kaiti SC","STKaiti","KaiTi_GB2312",serif'
-    }
+    { id: 'lxgw', name: '霞鹜文楷', doc: 'LXGW WenKai', sample: '宫花红处，春水绿时',
+      stack: '"LXGW WenKai Screen","LXGW WenKai","霞鹜文楷","Songti SC","Noto Serif SC",serif' },
+    { id: 'huiwen', name: '汇文明朝体', doc: '汇文明朝体', sample: '宫花红处，春水绿时',
+      stack: '"汇文明朝体","Huiwen-Mincho","HuiWenMinChaoTi","HuiwenMincho","Songti SC","Noto Serif SC",serif' },
+    { id: 'tsukushi', name: '筑紫明朝体', doc: '筑紫明朝', sample: 'いろはにほへと　ちりぬるを',
+      stack: '"筑紫明朝","Tsukushi Mincho","TsukushiMincho","Tsukushi A Old Mincho","Yu Mincho","游明朝","Hiragino Mincho ProN","Noto Serif JP",serif' },
+    { id: 'song', name: '宋体', doc: '宋体', sample: '宫花红处，春水绿时',
+      stack: '"宋体",SimSun,"Songti SC","Songti TC","STSong","Noto Serif SC",serif' },
+    { id: 'kaiti', name: '楷体', doc: '楷体', sample: '宫花红处，春水绿时',
+      stack: '"楷体",KaiTi,"Kaiti SC","STKaiti","KaiTi_GB2312",serif' }
   ];
 
   var DEFAULT_TYPO = { font: 'lxgw', size: 19, lh: 1.95, indent: false, theme: 'light' };
@@ -1184,35 +722,24 @@ input[type="range"].slider::-moz-range-thumb {
   var LOCAL_KEY = 'writer.local.v2';
   var CLIENT_KEY = 'writer.clientId';
 
-  /* ============================================================
-     元素引用
-     ============================================================ */
   var $ = function (id) { return document.getElementById(id); };
 
   var editor = $('editor'), titleInput = $('titleInput'), counter = $('counter');
   var peersEl = $('peers'), scrim = $('scrim'), toastEl = $('toast'), themeColor = $('themeColor');
-
   var sheetFont = $('sheetFont'), sheetComment = $('sheetComment');
   var sheetShare = $('sheetShare'), sheetMenu = $('sheetMenu');
-
   var fontListEl = $('fontList'), rangeSize = $('rangeSize'), valSize = $('valSize');
   var rangeLh = $('rangeLh'), valLh = $('valLh'), swIndent = $('swIndent');
   var themeSeg = $('themeSeg');
-
   var commentList = $('commentList'), composerSlot = $('composerSlot');
   var commentCount = $('commentCount'), commentBadge = $('commentBadge');
-
   var shareStatus = $('shareStatus'), shareStatusText = $('shareStatusText');
   var shareLinkWrap = $('shareLinkWrap'), shareLinkInput = $('shareLinkInput');
   var btnCopyLink = $('btnCopyLink'), btnCreateRoom = $('btnCreateRoom');
   var shareHint = $('shareHint');
-
   var previewLayer = $('previewLayer'), previewDoc = $('previewDoc'), fileInput = $('fileInput');
   var activeSheet = null;
 
-  /* ============================================================
-     排版设置
-     ============================================================ */
   var typo = Object.assign({}, DEFAULT_TYPO);
 
   function getFont(id) {
@@ -1242,8 +769,7 @@ input[type="range"].slider::-moz-range-thumb {
 
   function resolveTheme() {
     if (typo.theme === 'auto') {
-      return window.matchMedia &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
     return typo.theme;
   }
@@ -1269,14 +795,10 @@ input[type="range"].slider::-moz-range-thumb {
     themeColor.setAttribute('content', t === 'dark' ? '#17171A' : '#FCFAF6');
 
     var btns = themeSeg.querySelectorAll('button');
-    for (var i = 0; i < btns.length; i++) {
-      btns[i].classList.toggle('on', btns[i].getAttribute('data-theme-val') === typo.theme);
-    }
+    for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('on', btns[i].getAttribute('data-theme-val') === typo.theme);
 
     var opts = fontListEl.querySelectorAll('.font-option');
-    for (var j = 0; j < opts.length; j++) {
-      opts[j].classList.toggle('active', opts[j].getAttribute('data-id') === typo.font);
-    }
+    for (var j = 0; j < opts.length; j++) opts[j].classList.toggle('active', opts[j].getAttribute('data-id') === typo.font);
   }
 
   function buildFontList() {
@@ -1285,44 +807,18 @@ input[type="range"].slider::-moz-range-thumb {
       btn.type = 'button';
       btn.className = 'font-option';
       btn.setAttribute('data-id', f.id);
-
-      var check = document.createElement('span');
-      check.className = 'fo-check';
-
-      var body = document.createElement('span');
-      body.className = 'fo-body';
-
-      var nm = document.createElement('span');
-      nm.className = 'fo-name';
-      nm.textContent = f.name;
-
-      var sp = document.createElement('span');
-      sp.className = 'fo-sample';
-      sp.style.fontFamily = f.stack;
-      sp.textContent = f.sample;
-
-      body.appendChild(nm);
-      body.appendChild(sp);
-      btn.appendChild(check);
-      btn.appendChild(body);
-
-      btn.addEventListener('click', function () {
-        typo.font = f.id;
-        applyTypo();
-        saveTypo();
-        toast('字体：' + f.name);
-      });
-
+      var check = document.createElement('span'); check.className = 'fo-check';
+      var body = document.createElement('span'); body.className = 'fo-body';
+      var nm = document.createElement('span'); nm.className = 'fo-name'; nm.textContent = f.name;
+      var sp = document.createElement('span'); sp.className = 'fo-sample'; sp.style.fontFamily = f.stack; sp.textContent = f.sample;
+      body.appendChild(nm); body.appendChild(sp);
+      btn.appendChild(check); btn.appendChild(body);
+      btn.addEventListener('click', function () { typo.font = f.id; applyTypo(); saveTypo(); toast('字体：' + f.name); });
       fontListEl.appendChild(btn);
     });
   }
 
-  /* ============================================================
-     工具
-     ============================================================ */
-  function esc(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
   var toastTimer = null;
   function toast(msg) {
@@ -1335,8 +831,7 @@ input[type="range"].slider::-moz-range-thumb {
   function pad2(n) { return n < 10 ? '0' + n : '' + n; }
   function stamp() {
     var d = new Date();
-    return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) +
-           '-' + pad2(d.getHours()) + pad2(d.getMinutes());
+    return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + '-' + pad2(d.getHours()) + pad2(d.getMinutes());
   }
   function randId(n) {
     var c = 'abcdefghijkmnpqrstuvwxyz23456789', s = '';
@@ -1356,22 +851,14 @@ input[type="range"].slider::-moz-range-thumb {
 
   function legacyCopy(text, okMsg, errMsg) {
     var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.top = '-9999px';
+    ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-9999px';
     ta.setAttribute('readonly', '');
-    document.body.appendChild(ta);
-    ta.select();
-    ta.setSelectionRange(0, text.length);
-    var ok = false;
-    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+    var ok = false; try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
     document.body.removeChild(ta);
     toast(ok ? (okMsg || '已复制') : (errMsg || '复制失败'));
   }
 
-  /* ============================================================
-     Markdown 渲染（仅用于预览与 Word 降级）
-     ============================================================ */
   function inline(s) {
     return esc(s)
       .replace(/`([^`]+)`/g, '<code>$1</code>')
@@ -1380,49 +867,31 @@ input[type="range"].slider::-moz-range-thumb {
       .replace(/\*([^*]+)\*/g, '<em>$1</em>')
       .replace(/_([^_]+)_/g, '<em>$1</em>')
       .replace(/~~([^~]+)~~/g, '<del>$1</del>')
-      .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+      .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
   }
 
   function md(src) {
     var lines = String(src).split(/\r?\n/);
     var out = '', inCode = false, buf = [], list = null;
-
     function closeList() { if (list) { out += '</' + list + '>'; list = null; } }
-
     for (var i = 0; i < lines.length; i++) {
       var L = lines[i], m;
-
       if (/^\s*```/.test(L)) {
-        if (inCode) {
-          out += '<pre><code>' + esc(buf.join('\n')) + '</code></pre>';
-          buf = []; inCode = false;
-        } else { closeList(); inCode = true; }
+        if (inCode) { out += '<pre><code>' + esc(buf.join('\n')) + '</code></pre>'; buf = []; inCode = false; }
+        else { closeList(); inCode = true; }
         continue;
       }
       if (inCode) { buf.push(L); continue; }
       if (!L.trim()) { closeList(); continue; }
-
       m = L.match(/^(#{1,6})\s+(.*)$/);
       if (m) { closeList(); var h = m[1].length; out += '<h' + h + '>' + inline(m[2]) + '</h' + h + '>'; continue; }
-
       if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(L)) { closeList(); out += '<hr>'; continue; }
-
       m = L.match(/^\s*[-*+]\s+(.*)$/);
-      if (m) {
-        if (list !== 'ul') { closeList(); out += '<ul>'; list = 'ul'; }
-        out += '<li>' + inline(m[1]) + '</li>'; continue;
-      }
-
+      if (m) { if (list !== 'ul') { closeList(); out += '<ul>'; list = 'ul'; } out += '<li>' + inline(m[1]) + '</li>'; continue; }
       m = L.match(/^\s*\d+[.)]\s+(.*)$/);
-      if (m) {
-        if (list !== 'ol') { closeList(); out += '<ol>'; list = 'ol'; }
-        out += '<li>' + inline(m[1]) + '</li>'; continue;
-      }
-
+      if (m) { if (list !== 'ol') { closeList(); out += '<ol>'; list = 'ol'; } out += '<li>' + inline(m[1]) + '</li>'; continue; }
       m = L.match(/^\s*>\s?(.*)$/);
       if (m) { closeList(); out += '<blockquote>' + inline(m[1]) + '</blockquote>'; continue; }
-
       closeList();
       out += '<p>' + inline(L) + '</p>';
     }
@@ -1431,16 +900,10 @@ input[type="range"].slider::-moz-range-thumb {
     return out;
   }
 
-  /* ============================================================
-     编辑器状态
-     ============================================================ */
-  var state = { title: '', comments: [], room: '', online: false,
-                selfId: '', selfName: '', selfColor: '', peers: [] };
+  var state = { title: '', comments: [], room: '', online: false, selfId: '', selfName: '', selfColor: '', peers: [] };
   var saveTimer = null;
 
-  function countText() {
-    counter.textContent = editor.value.replace(/\s/g, '').length + ' 字';
-  }
+  function countText() { counter.textContent = editor.value.replace(/\s/g, '').length + ' 字'; }
 
   function persistLocal() {
     if (state.room) return;
@@ -1451,16 +914,9 @@ input[type="range"].slider::-moz-range-thumb {
     } catch (e) {}
   }
 
-  function scheduleLocalSave() {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(persistLocal, 600);
-  }
+  function scheduleLocalSave() { clearTimeout(saveTimer); saveTimer = setTimeout(persistLocal, 600); }
 
-  /* ============================================================
-     协作
-     ============================================================ */
-  var collab = { ws: null, bc: null, local: false, ready: false,
-                 suppress: false, pushTimer: null, reconnectTimer: null, retry: 0 };
+  var collab = { ws: null, bc: null, local: false, ready: false, suppress: false, pushTimer: null, reconnectTimer: null, retry: 0 };
   var COLORS = ['#4A8B6F','#C2873F','#5B7FBF','#B3618A','#8A7BC8','#4F9BA8','#C2604F','#7E9B4A'];
 
   function pickColor(id) {
@@ -1482,15 +938,15 @@ input[type="range"].slider::-moz-range-thumb {
 
   function pushContent() {
     if (!collab.ready) return;
-    var payload = { type: 'text', content: editor.value, from: state.selfId };
-    if (collab.local) { if (collab.bc) collab.bc.postMessage(payload); }
+    var payload = { type: 'text', content: editor.value };
+    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); }
     else if (collab.ws && collab.ws.readyState === 1) collab.ws.send(JSON.stringify(payload));
   }
 
   function pushTitle() {
     if (!collab.ready) return;
-    var payload = { type: 'title', title: titleInput.value, from: state.selfId };
-    if (collab.local) { if (collab.bc) collab.bc.postMessage(payload); }
+    var payload = { type: 'title', title: titleInput.value };
+    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); }
     else if (collab.ws && collab.ws.readyState === 1) collab.ws.send(JSON.stringify(payload));
   }
 
@@ -1523,15 +979,24 @@ input[type="range"].slider::-moz-range-thumb {
       state.selfId = msg.clientId || state.selfId;
       state.selfColor = pickColor(state.selfId);
       state.selfName = msg.selfName || state.selfName;
-      if (msg.doc) {
+
+      var serverContent = (msg.doc && typeof msg.doc.content === 'string') ? msg.doc.content : '';
+      var serverTitle = (msg.doc && typeof msg.doc.title === 'string') ? msg.doc.title : '';
+      var serverComments = (msg.doc && Array.isArray(msg.doc.comments)) ? msg.doc.comments : [];
+
+      if (serverContent || serverTitle) {
         collab.suppress = true;
-        if (typeof msg.doc.title === 'string') titleInput.value = msg.doc.title;
-        if (typeof msg.doc.content === 'string') editor.value = msg.doc.content;
-        state.comments = Array.isArray(msg.doc.comments) ? msg.doc.comments : [];
+        titleInput.value = serverTitle;
+        editor.value = serverContent;
+        state.comments = serverComments;
         collab.suppress = false;
         countText();
         renderComments();
+      } else if (editor.value || titleInput.value) {
+        setTimeout(pushContent, 80);
+        setTimeout(pushTitle, 150);
       }
+
       if (Array.isArray(msg.peers)) { state.peers = msg.peers; renderPeers(); }
       updateSharePanel();
       return;
@@ -1563,9 +1028,7 @@ input[type="range"].slider::-moz-range-thumb {
       }
       if (!exist) state.comments.push(msg.comment);
       renderComments();
-      if (msg.comment.clientId !== state.selfId) {
-        toast((msg.comment.author || '有人') + ' 添加了一条批注');
-      }
+      if (msg.comment.clientId !== state.selfId) toast((msg.comment.author || '有人') + ' 添加了一条批注');
       return;
     }
 
@@ -1585,14 +1048,10 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   function connectLocal(room) {
-    if (typeof BroadcastChannel === 'undefined') {
-      toast('当前浏览器不支持本地协作演示');
-      return;
-    }
+    if (typeof BroadcastChannel === 'undefined') { toast('当前浏览器不支持本地协作演示'); return; }
     collab.local = true;
     try { collab.bc = new BroadcastChannel('writer-room-' + room); }
     catch (e) { toast('无法建立本地协作通道'); return; }
-
     collab.bc.onmessage = function (e) {
       var msg = e.data;
       if (!msg || msg.from === state.selfId) return;
@@ -1603,48 +1062,33 @@ input[type="range"].slider::-moz-range-thumb {
       }
       handleMessage(msg);
     };
-
     collab.ready = true;
     collab.bc.postMessage({ type: 'hello', from: state.selfId });
     state.peers = [{ id: state.selfId, name: state.selfName + '（本机）' }];
-    renderPeers();
-    updateSharePanel();
+    renderPeers(); updateSharePanel();
   }
 
   function connectServer(room) {
     var base = CONFIG.SERVER.replace(/\/+$/, '');
-    var wsUrl = base.replace(/^http/, 'ws') +
-                '/ws?room=' + encodeURIComponent(room) +
-                '&name=' + encodeURIComponent(state.selfName);
+    var wsUrl = base.replace(/^http/, 'ws') + '/ws?room=' + encodeURIComponent(room) + '&name=' + encodeURIComponent(state.selfName);
     collab.local = false;
-
     var ws;
     try { ws = new WebSocket(wsUrl); } catch (e) { toast('无法连接协作服务器'); return; }
     collab.ws = ws;
 
-    ws.onopen = function () {
-      collab.retry = 0;
-      state.online = true;
-      updateSharePanel();
-      renderPeers();
-    };
+    ws.onopen = function () { collab.retry = 0; state.online = true; updateSharePanel(); renderPeers(); };
 
     ws.onmessage = function (e) {
-      var msg;
-      try { msg = JSON.parse(e.data); } catch (err) { return; }
+      var msg; try { msg = JSON.parse(e.data); } catch (err) { return; }
       handleMessage(msg);
     };
 
     ws.onclose = function () {
-      collab.ready = false;
-      state.online = false;
-      updateSharePanel();
+      collab.ready = false; state.online = false; updateSharePanel();
       if (state.room && collab.retry < 6) {
         collab.retry++;
         clearTimeout(collab.reconnectTimer);
-        collab.reconnectTimer = setTimeout(function () {
-          if (state.room) connectServer(state.room);
-        }, 1200 * collab.retry);
+        collab.reconnectTimer = setTimeout(function () { if (state.room) connectServer(state.room); }, 1200 * collab.retry);
       }
     };
     ws.onerror = function () {};
@@ -1661,18 +1105,13 @@ input[type="range"].slider::-moz-range-thumb {
     if (collab.bc) { try { collab.bc.close(); } catch (e) {} collab.bc = null; }
     if (collab.ws) { try { collab.ws.close(); } catch (e) {} collab.ws = null; }
     clearTimeout(collab.reconnectTimer);
-    collab.ready = false;
-    state.online = false;
+    collab.ready = false; state.online = false;
     if (!silent) { state.room = ''; state.peers = []; renderPeers(); }
   }
 
   function renderPeers() {
     var list = state.peers || [];
-    if (!state.room || list.length === 0) {
-      peersEl.classList.remove('show');
-      peersEl.innerHTML = '';
-      return;
-    }
+    if (!state.room || list.length === 0) { peersEl.classList.remove('show'); peersEl.innerHTML = ''; return; }
     peersEl.innerHTML = '';
     list.slice(0, 4).forEach(function (p) {
       var d = document.createElement('span');
@@ -1692,30 +1131,23 @@ input[type="range"].slider::-moz-range-thumb {
     peersEl.classList.add('show');
   }
 
-  /* ============================================================
-     批注
-     ============================================================ */
   function sendComment(quote, text) {
-    var payload = {
-      type: 'comment:add', from: state.selfId,
-      comment: { quote: quote, text: text, name: state.selfName }
-    };
+    var payload = { type: 'comment:add', comment: { quote: quote, text: text, name: state.selfName } };
     if (!collab.ready) {
       state.comments.push({
         id: randId(10), quote: quote, text: text, author: state.selfName,
         clientId: state.selfId, resolved: false, createdAt: Date.now()
       });
-      renderComments();
-      toast('已添加批注（本地）');
+      renderComments(); toast('已添加批注（本地）');
       return;
     }
-    if (collab.local) { if (collab.bc) collab.bc.postMessage(payload); }
+    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); }
     else if (collab.ws && collab.ws.readyState === 1) collab.ws.send(JSON.stringify(payload));
   }
 
   function resolveComment(id, resolved) {
-    var payload = { type: 'comment:resolve', id: id, resolved: resolved, from: state.selfId };
-    if (collab.local) { if (collab.bc) collab.bc.postMessage(payload); }
+    var payload = { type: 'comment:resolve', id: id, resolved: resolved };
+    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); }
     else if (collab.ws && collab.ws.readyState === 1) { collab.ws.send(JSON.stringify(payload)); return; }
     for (var i = 0; i < state.comments.length; i++) {
       if (state.comments[i].id === id) { state.comments[i].resolved = resolved; break; }
@@ -1724,8 +1156,8 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   function deleteComment(id) {
-    var payload = { type: 'comment:delete', id: id, from: state.selfId };
-    if (collab.local) { if (collab.bc) collab.bc.postMessage(payload); }
+    var payload = { type: 'comment:delete', id: id };
+    if (collab.local) { if (collab.bc) collab.bc.postMessage(Object.assign({ from: state.selfId }, payload)); }
     else if (collab.ws && collab.ws.readyState === 1) { collab.ws.send(JSON.stringify(payload)); return; }
     state.comments = state.comments.filter(function (c) { return c.id !== id; });
     renderComments();
@@ -1733,27 +1165,16 @@ input[type="range"].slider::-moz-range-thumb {
 
   function fmtTime(ts) {
     if (!ts) return '';
-    var d = new Date(ts);
-    var now = new Date();
-    if (d.toDateString() === now.toDateString()) {
-      return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
-    }
+    var d = new Date(ts), now = new Date();
+    if (d.toDateString() === now.toDateString()) return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
     return (d.getMonth() + 1) + '月' + d.getDate() + '日';
   }
 
   function renderComments() {
     var open = state.comments.filter(function (c) { return !c.resolved; });
-
-    commentCount.textContent = state.comments.length
-      ? open.length + ' 条待处理 / 共 ' + state.comments.length + ' 条' : '';
-
-    if (open.length > 0) {
-      commentBadge.textContent = open.length > 99 ? '99+' : open.length;
-      commentBadge.style.display = '';
-    } else {
-      commentBadge.style.display = 'none';
-    }
-
+    commentCount.textContent = state.comments.length ? open.length + ' 条待处理 / 共 ' + state.comments.length + ' 条' : '';
+    if (open.length > 0) { commentBadge.textContent = open.length > 99 ? '99+' : open.length; commentBadge.style.display = ''; }
+    else { commentBadge.style.display = 'none'; }
     commentList.innerHTML = '';
 
     if (!state.comments.length) {
@@ -1772,43 +1193,23 @@ input[type="range"].slider::-moz-range-thumb {
     sorted.forEach(function (c) {
       var box = document.createElement('div');
       box.className = 'comment' + (c.resolved ? ' resolved' : '');
-
-      var quote = document.createElement('div');
-      quote.className = 'comment-quote';
-      quote.textContent = c.quote || '（全文）';
-
-      var text = document.createElement('div');
-      text.className = 'comment-text';
-      text.textContent = c.text || '';
-
-      var meta = document.createElement('div');
-      meta.className = 'comment-meta';
-
-      var who = document.createElement('span');
-      who.className = 'who';
+      var quote = document.createElement('div'); quote.className = 'comment-quote'; quote.textContent = c.quote || '（全文）';
+      var text = document.createElement('div'); text.className = 'comment-text'; text.textContent = c.text || '';
+      var meta = document.createElement('div'); meta.className = 'comment-meta';
+      var who = document.createElement('span'); who.className = 'who';
       who.style.color = pickColor(c.clientId || c.author || 'x');
       who.textContent = c.author || '匿名';
-
-      var tm = document.createElement('span');
-      tm.textContent = fmtTime(c.createdAt);
-
-      var sp = document.createElement('span');
-      sp.className = 'sp';
-
-      meta.appendChild(who);
-      meta.appendChild(tm);
-      meta.appendChild(sp);
+      var tm = document.createElement('span'); tm.textContent = fmtTime(c.createdAt);
+      var sp = document.createElement('span'); sp.className = 'sp';
+      meta.appendChild(who); meta.appendChild(tm); meta.appendChild(sp);
 
       if (c.quote) {
         var goBtn = document.createElement('button');
-        goBtn.type = 'button';
-        goBtn.className = 'mini-btn';
-        goBtn.textContent = '定位';
+        goBtn.type = 'button'; goBtn.className = 'mini-btn'; goBtn.textContent = '定位';
         goBtn.addEventListener('click', function () {
           var idx = editor.value.indexOf(c.quote);
           if (idx < 0) { toast('原文已被修改，无法定位'); return; }
-          closeSheet();
-          editor.focus();
+          closeSheet(); editor.focus();
           editor.setSelectionRange(idx, idx + c.quote.length);
           var ratio = idx / Math.max(1, editor.value.length);
           editor.scrollTop = ratio * (editor.scrollHeight - editor.clientHeight);
@@ -1817,26 +1218,19 @@ input[type="range"].slider::-moz-range-thumb {
       }
 
       var rBtn = document.createElement('button');
-      rBtn.type = 'button';
-      rBtn.className = 'mini-btn';
+      rBtn.type = 'button'; rBtn.className = 'mini-btn';
       rBtn.textContent = c.resolved ? '重新打开' : '标记已解决';
       rBtn.addEventListener('click', function () { resolveComment(c.id, !c.resolved); });
       meta.appendChild(rBtn);
 
       if (c.clientId === state.selfId) {
         var dBtn = document.createElement('button');
-        dBtn.type = 'button';
-        dBtn.className = 'mini-btn danger';
-        dBtn.textContent = '删除';
-        dBtn.addEventListener('click', function () {
-          if (confirm('删除这条批注？')) deleteComment(c.id);
-        });
+        dBtn.type = 'button'; dBtn.className = 'mini-btn danger'; dBtn.textContent = '删除';
+        dBtn.addEventListener('click', function () { if (confirm('删除这条批注？')) deleteComment(c.id); });
         meta.appendChild(dBtn);
       }
 
-      box.appendChild(quote);
-      box.appendChild(text);
-      box.appendChild(meta);
+      box.appendChild(quote); box.appendChild(text); box.appendChild(meta);
       commentList.appendChild(box);
     });
   }
@@ -1844,66 +1238,33 @@ input[type="range"].slider::-moz-range-thumb {
   function openCommentSheet() {
     composerSlot.innerHTML = '';
     var sel = '';
-    if (document.activeElement === editor) {
-      sel = editor.value.substring(editor.selectionStart, editor.selectionEnd);
-    }
-
+    if (document.activeElement === editor) sel = editor.value.substring(editor.selectionStart, editor.selectionEnd);
     if (sel && sel.trim()) {
-      var box = document.createElement('div');
-      box.className = 'composer';
-
-      var q = document.createElement('div');
-      q.className = 'quote';
+      var box = document.createElement('div'); box.className = 'composer';
+      var q = document.createElement('div'); q.className = 'quote';
       q.textContent = sel.length > 140 ? sel.slice(0, 140) + '…' : sel;
-
-      var ta = document.createElement('textarea');
-      ta.placeholder = '写下你的批注…';
-
-      var actions = document.createElement('div');
-      actions.className = 'composer-actions';
-
-      var cancel = document.createElement('button');
-      cancel.type = 'button';
-      cancel.className = 'mini-btn';
-      cancel.textContent = '取消';
+      var ta = document.createElement('textarea'); ta.placeholder = '写下你的批注…';
+      var actions = document.createElement('div'); actions.className = 'composer-actions';
+      var cancel = document.createElement('button'); cancel.type = 'button'; cancel.className = 'mini-btn'; cancel.textContent = '取消';
       cancel.addEventListener('click', function () { composerSlot.innerHTML = ''; });
-
-      var send = document.createElement('button');
-      send.type = 'button';
-      send.className = 'mini-btn';
-      send.style.background = 'var(--accent)';
-      send.style.color = '#fff';
-      send.textContent = '发布';
+      var send = document.createElement('button'); send.type = 'button'; send.className = 'mini-btn';
+      send.style.background = 'var(--accent)'; send.style.color = '#fff'; send.textContent = '发布';
       send.addEventListener('click', function () {
         var v = ta.value.trim();
         if (!v) { toast('批注内容不能为空'); return; }
         sendComment(sel, v);
         composerSlot.innerHTML = '';
       });
-
-      actions.appendChild(cancel);
-      actions.appendChild(send);
-      box.appendChild(q);
-      box.appendChild(ta);
-      box.appendChild(actions);
+      actions.appendChild(cancel); actions.appendChild(send);
+      box.appendChild(q); box.appendChild(ta); box.appendChild(actions);
       composerSlot.appendChild(box);
       setTimeout(function () { ta.focus(); }, 320);
     }
-
     renderComments();
     openSheet(sheetComment);
   }
 
-  /* ============================================================
-     面板控制
-     ============================================================ */
-  function openSheet(el) {
-    closeSheet();
-    activeSheet = el;
-    scrim.classList.add('show');
-    el.classList.add('show');
-  }
-
+  function openSheet(el) { closeSheet(); activeSheet = el; scrim.classList.add('show'); el.classList.add('show'); }
   function closeSheet() {
     if (activeSheet) { activeSheet.classList.remove('show'); activeSheet = null; }
     scrim.classList.remove('show');
@@ -1913,21 +1274,16 @@ input[type="range"].slider::-moz-range-thumb {
     var online = collab.ready;
     var n = (state.peers || []).length;
     shareStatus.classList.toggle('online', online);
-
     if (!state.room) {
-      shareStatusText.innerHTML =
-        '未开启协作<small>生成链接后，任何拿到链接的人都能一起编辑</small>';
+      shareStatusText.innerHTML = '未开启协作<small>生成链接后，任何拿到链接的人都能一起编辑</small>';
       shareLinkWrap.style.display = 'none';
       btnCreateRoom.style.display = '';
     } else {
-      shareStatusText.innerHTML =
-        (online ? '协作已开启' : '正在连接…') +
-        '<small>' + (n > 1 ? n + ' 人正在编辑' : '等待他人加入') + '</small>';
+      shareStatusText.innerHTML = (online ? '协作已开启' : '正在连接…') + '<small>' + (n > 1 ? n + ' 人正在编辑' : '等待他人加入') + '</small>';
       shareLinkWrap.style.display = '';
       btnCreateRoom.style.display = 'none';
       shareLinkInput.value = buildShareUrl();
     }
-
     shareHint.innerHTML = CONFIG.SERVER
       ? '链接有效期与你的服务器存储策略一致。打开链接的人可以实时看到你的输入，并添加批注。'
       : '当前为<strong>本地演示模式</strong>：同一浏览器的多个标签页之间可以实时同步，用于体验协作效果。';
@@ -1945,16 +1301,10 @@ input[type="range"].slider::-moz-range-thumb {
     if (CONFIG.SERVER) {
       var base = CONFIG.SERVER.replace(/\/+$/, '');
       fetch(base + '/api/doc/' + room, { method: 'GET' }).catch(function () {})
-        .then(function () {
-          connectRoom(room);
-          updateSharePanel();
-          afterRoomReady(room);
-        });
+        .then(function () { connectRoom(room); updateSharePanel(); afterRoomReady(room); });
       return;
     }
-    connectRoom(room);
-    updateSharePanel();
-    afterRoomReady(room);
+    connectRoom(room); updateSharePanel(); afterRoomReady(room);
   }
 
   function afterRoomReady(room) {
@@ -1966,15 +1316,8 @@ input[type="range"].slider::-moz-range-thumb {
     toast('协作已开启，把链接发给朋友吧');
   }
 
-  /* ============================================================
-     Word 导出
-     ============================================================ */
-  function bodyPt() {
-    return Math.round(Math.min(16, Math.max(10.5, typo.size * 0.62)) * 2);
-  }
-  function lineTwips() {
-    return Math.round(360 * typo.lh * (typo.size / 19));
-  }
+  function bodyPt() { return Math.round(Math.min(16, Math.max(10.5, typo.size * 0.62)) * 2); }
+  function lineTwips() { return Math.round(360 * typo.lh * (typo.size / 19)); }
 
   function parseRuns(text, base) {
     var docx = window.docx;
@@ -1982,14 +1325,12 @@ input[type="range"].slider::-moz-range-thumb {
     var runs = [];
     var re = /(\*\*[^*]+\*\*|__[^_]+__|`[^`]+`|\*[^*]+\*|_[^_]+_|~~[^~]+~~)/g;
     var last = 0, m;
-
     function mk(t, extra) {
       var o = { text: t, font: fontName, size: (base && base.size) || bodyPt() };
       if (base) { for (var k in base) if (k !== 'size') o[k] = base[k]; }
       if (extra) { for (var k2 in extra) o[k2] = extra[k2]; }
       return new docx.TextRun(o);
     }
-
     while ((m = re.exec(text)) !== null) {
       if (m.index > last) runs.push(mk(text.slice(last, m.index)));
       var tok = m[0];
@@ -2014,30 +1355,23 @@ input[type="range"].slider::-moz-range-thumb {
 
     if (title && title.trim()) {
       kids.push(new P({
-        children: [new docx.TextRun({
-          text: title.trim(), font: fontName, size: 36, bold: true
-        })],
+        children: [new docx.TextRun({ text: title.trim(), font: fontName, size: 36, bold: true })],
         spacing: { after: 320, line: lt }
       }));
     }
 
     for (var i = 0; i < lines.length; i++) {
       var L = lines[i], m;
-
       if (/^\s*```/.test(L)) {
         if (inCode) {
           buf.forEach(function (cl) {
-            kids.push(new P({
-              children: [new docx.TextRun({ text: cl || ' ', font: 'Consolas', size: 20 })],
-              spacing: { line: 260 }, shading: { fill: 'F5F5F5' }
-            }));
+            kids.push(new P({ children: [new docx.TextRun({ text: cl || ' ', font: 'Consolas', size: 20 })], spacing: { line: 260 }, shading: { fill: 'F5F5F5' } }));
           });
           buf = []; inCode = false;
         } else { inCode = true; }
         continue;
       }
       if (inCode) { buf.push(L); continue; }
-
       if (!L.trim()) { kids.push(new P({ children: [], spacing: { after: 120 } })); continue; }
 
       m = L.match(/^(#{1,6})\s+(.*)$/);
@@ -2051,30 +1385,14 @@ input[type="range"].slider::-moz-range-thumb {
         }));
         continue;
       }
-
       if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(L)) {
-        kids.push(new P({
-          text: '',
-          border: { bottom: { style: 'single', size: 6, color: 'DDD8CE', space: 1 } },
-          spacing: { before: 160, after: 160 }
-        }));
+        kids.push(new P({ text: '', border: { bottom: { style: 'single', size: 6, color: 'DDD8CE', space: 1 } }, spacing: { before: 160, after: 160 } }));
         continue;
       }
-
       m = L.match(/^\s*[-*+]\s+(.*)$/);
-      if (m) {
-        kids.push(new P({ bullet: { level: 0 }, children: parseRuns(m[1]),
-                          spacing: { after: 80, line: lt } }));
-        continue;
-      }
-
+      if (m) { kids.push(new P({ bullet: { level: 0 }, children: parseRuns(m[1]), spacing: { after: 80, line: lt } })); continue; }
       m = L.match(/^\s*\d+[.)]\s+(.*)$/);
-      if (m) {
-        kids.push(new P({ numbering: { reference: 'ol', level: 0 },
-                          children: parseRuns(m[1]), spacing: { after: 80, line: lt } }));
-        continue;
-      }
-
+      if (m) { kids.push(new P({ numbering: { reference: 'ol', level: 0 }, children: parseRuns(m[1]), spacing: { after: 80, line: lt } })); continue; }
       m = L.match(/^\s*>\s?(.*)$/);
       if (m) {
         kids.push(new P({
@@ -2085,7 +1403,6 @@ input[type="range"].slider::-moz-range-thumb {
         }));
         continue;
       }
-
       var opts = { children: parseRuns(L), spacing: { after: 160, line: lt } };
       if (typo.indent) opts.indent = { firstLine: Math.round(pt * 20) };
       kids.push(new P(opts));
@@ -2094,24 +1411,10 @@ input[type="range"].slider::-moz-range-thumb {
     var doc = new docx.Document({
       creator: '宫花红',
       title: title || '未命名',
-      styles: {
-        default: {
-          document: {
-            run: { font: fontName, size: pt, color: '33322E' },
-            paragraph: { spacing: { line: lt, after: 160 } }
-          }
-        }
-      },
-      numbering: {
-        config: [{ reference: 'ol', levels: [{ level: 0, format: 'decimal', text: '%1.', alignment: 'start' }] }]
-      },
+      styles: { default: { document: { run: { font: fontName, size: pt, color: '33322E' }, paragraph: { spacing: { line: lt, after: 160 } } } } },
+      numbering: { config: [{ reference: 'ol', levels: [{ level: 0, format: 'decimal', text: '%1.', alignment: 'start' }] }] },
       sections: [{
-        properties: {
-          page: {
-            size: { width: 11906, height: 16838 },
-            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 }
-          }
-        },
+        properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } },
         children: kids
       }]
     });
@@ -2123,37 +1426,22 @@ input[type="range"].slider::-moz-range-thumb {
     var fontName = getFont(typo.font).doc;
     var pt = Math.min(16, Math.max(10.5, typo.size * 0.62)).toFixed(1);
     var indent = typo.indent ? 'text-indent:2em;' : '';
-
     var html =
-      '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
-      'xmlns:w="urn:schemas-microsoft-com:office:word" ' +
-      'xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">' +
-      '<title>' + esc(title || '文章') + '</title>' +
-      '<style>@page{size:A4;margin:2.5cm}' +
-      'body{font-family:"' + fontName + '",SimSun,serif;font-size:' + pt + 'pt;' +
-      'line-height:' + typo.lh + ';color:#33322E}' +
-      'h1,h2,h3,h4,h5,h6{font-family:inherit;font-weight:bold}' +
-      'p{' + indent + '}' +
-      'blockquote{border-left:3px solid #ddd8ce;padding-left:12px;color:#8c877d}' +
-      'pre{background:#f5f5f5;padding:10px;font-family:Consolas,monospace;font-size:10.5pt}' +
-      'code{font-family:Consolas,monospace;background:#f1f3ee;padding:1px 3px}' +
+      '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>' + esc(title || '文章') + '</title>' +
+      '<style>@page{size:A4;margin:2.5cm}body{font-family:"' + fontName + '",SimSun,serif;font-size:' + pt + 'pt;line-height:' + typo.lh + ';color:#33322E}' +
+      'h1,h2,h3,h4,h5,h6{font-family:inherit;font-weight:bold}p{' + indent + '}blockquote{border-left:3px solid #ddd8ce;padding-left:12px;color:#8c877d}' +
+      'pre{background:#f5f5f5;padding:10px;font-family:Consolas,monospace;font-size:10.5pt}code{font-family:Consolas,monospace;background:#f1f3ee;padding:1px 3px}' +
       'hr{border:0;border-top:1px solid #ddd8ce}</style></head><body>' +
       (title && title.trim() ? '<h1 style="font-size:18pt">' + esc(title.trim()) + '</h1>' : '') +
       md(text) + '</body></html>';
-
-    return {
-      blob: new Blob(['\ufeff', html], { type: 'application/msword' }),
-      filename: filename.replace(/\.docx$/, '.doc')
-    };
+    return { blob: new Blob(['\ufeff', html], { type: 'application/msword' }), filename: filename.replace(/\.docx$/, '.doc') };
   }
 
   function buildWordFile(text, title) {
-    var filename = (title && title.trim() ? title.trim().slice(0, 30) : '未命名') +
-                   '-' + stamp() + '.docx';
+    var filename = (title && title.trim() ? title.trim().slice(0, 30) : '未命名') + '-' + stamp() + '.docx';
     if (window.docx && window.docx.Packer) {
-      return buildDocx(text, title).then(function (blob) {
-        return { blob: blob, filename: filename };
-      }).catch(function () { return buildLegacyDoc(text, title, filename); });
+      return buildDocx(text, title).then(function (blob) { return { blob: blob, filename: filename }; })
+        .catch(function () { return buildLegacyDoc(text, title, filename); });
     }
     return Promise.resolve(buildLegacyDoc(text, title, filename));
   }
@@ -2162,9 +1450,7 @@ input[type="range"].slider::-moz-range-thumb {
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url; a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
   }
 
@@ -2178,16 +1464,11 @@ input[type="range"].slider::-moz-range-thumb {
     }).catch(function () { toast('导出失败，请重试'); });
   }
 
-  /* ============================================================
-     导入 / 复制 / 清空
-     ============================================================ */
   function readFile(file) {
     if (!file) return;
     var name = (file.name || '').toLowerCase();
-    var isText = /\.(txt|md|markdown|text|json|csv|html?|xml|log|js|css)$/.test(name) ||
-                 (file.type && file.type.indexOf('text') === 0);
+    var isText = /\.(txt|md|markdown|text|json|csv|html?|xml|log|js|css)$/.test(name) || (file.type && file.type.indexOf('text') === 0);
     if (!isText && !confirm('“' + file.name + '”可能不是纯文本，仍要尝试读取吗？')) return;
-
     var reader = new FileReader();
     reader.onload = function () {
       var c = String(reader.result || '');
@@ -2197,9 +1478,7 @@ input[type="range"].slider::-moz-range-thumb {
       } else {
         editor.value = c;
       }
-      countText();
-      scheduleLocalSave();
-      schedulePush();
+      countText(); scheduleLocalSave(); schedulePush();
       editor.scrollTop = 0;
       toast('已载入：' + file.name);
     };
@@ -2207,13 +1486,7 @@ input[type="range"].slider::-moz-range-thumb {
     reader.readAsText(file, 'UTF-8');
   }
 
-  /* ============================================================
-     事件绑定
-     ============================================================ */
-  editor.addEventListener('input', function () {
-    countText(); scheduleLocalSave(); schedulePush();
-  });
-
+  editor.addEventListener('input', function () { countText(); scheduleLocalSave(); schedulePush(); });
   editor.addEventListener('keydown', function (e) {
     if (e.key === 'Tab') {
       e.preventDefault();
@@ -2223,12 +1496,8 @@ input[type="range"].slider::-moz-range-thumb {
       countText(); scheduleLocalSave(); schedulePush();
     }
   });
-
   editor.addEventListener('focus', function () {
-    setTimeout(function () {
-      var len = editor.value.length;
-      editor.setSelectionRange(len, len);
-    }, 60);
+    setTimeout(function () { var len = editor.value.length; editor.setSelectionRange(len, len); }, 60);
   });
 
   var pushThrottle = null;
@@ -2256,40 +1525,20 @@ input[type="range"].slider::-moz-range-thumb {
       return;
     }
     var mod = e.ctrlKey || e.metaKey;
-    if (mod && (e.key === 's' || e.key === 'S')) {
-      e.preventDefault();
-      persistLocal();
-      toast('已保存到本机');
-    }
+    if (mod && (e.key === 's' || e.key === 'S')) { e.preventDefault(); persistLocal(); toast('已保存到本机'); }
   });
 
-  rangeSize.addEventListener('input', function () {
-    typo.size = parseInt(this.value, 10) || DEFAULT_TYPO.size;
-    applyTypo(); saveTypo();
-  });
-  $('sizeMinus').addEventListener('click', function () {
-    typo.size = Math.max(MIN_SIZE, typo.size - 1);
-    applyTypo(); saveTypo();
-  });
-  $('sizePlus').addEventListener('click', function () {
-    typo.size = Math.min(MAX_SIZE, typo.size + 1);
-    applyTypo(); saveTypo();
-  });
-  rangeLh.addEventListener('input', function () {
-    typo.lh = parseFloat(this.value) || DEFAULT_TYPO.lh;
-    applyTypo(); saveTypo();
-  });
-  swIndent.addEventListener('click', function () {
-    typo.indent = !typo.indent;
-    applyTypo(); saveTypo();
-  });
+  rangeSize.addEventListener('input', function () { typo.size = parseInt(this.value, 10) || DEFAULT_TYPO.size; applyTypo(); saveTypo(); });
+  $('sizeMinus').addEventListener('click', function () { typo.size = Math.max(MIN_SIZE, typo.size - 1); applyTypo(); saveTypo(); });
+  $('sizePlus').addEventListener('click', function () { typo.size = Math.min(MAX_SIZE, typo.size + 1); applyTypo(); saveTypo(); });
+  rangeLh.addEventListener('input', function () { typo.lh = parseFloat(this.value) || DEFAULT_TYPO.lh; applyTypo(); saveTypo(); });
+  swIndent.addEventListener('click', function () { typo.indent = !typo.indent; applyTypo(); saveTypo(); });
   themeSeg.addEventListener('click', function (e) {
     var b = e.target.closest('button');
     if (!b) return;
     var v = b.getAttribute('data-theme-val');
     if (!v) return;
-    typo.theme = v;
-    applyTypo(); saveTypo();
+    typo.theme = v; applyTypo(); saveTypo();
   });
   $('btnResetTypo').addEventListener('click', function () {
     typo = Object.assign({}, DEFAULT_TYPO);
@@ -2305,9 +1554,7 @@ input[type="range"].slider::-moz-range-thumb {
   }
 
   btnCreateRoom.addEventListener('click', createRoom);
-  btnCopyLink.addEventListener('click', function () {
-    copyToClipboard(shareLinkInput.value, '链接已复制，发给朋友即可');
-  });
+  btnCopyLink.addEventListener('click', function () { copyToClipboard(shareLinkInput.value, '链接已复制，发给朋友即可'); });
   shareLinkInput.addEventListener('click', function () { this.select(); });
 
   $('miPreview').addEventListener('click', function () {
@@ -2315,18 +1562,13 @@ input[type="range"].slider::-moz-range-thumb {
     previewDoc.innerHTML = md(editor.value) || '<p style="color:var(--text-3)">还没有内容</p>';
     previewLayer.classList.add('show');
   });
-  $('btnClosePreview').addEventListener('click', function () {
-    previewLayer.classList.remove('show');
-  });
+  $('btnClosePreview').addEventListener('click', function () { previewLayer.classList.remove('show'); });
   $('miCopy').addEventListener('click', function () {
     closeSheet();
     if (!editor.value) { toast('还没有内容'); return; }
     copyToClipboard(editor.value, '已复制全文');
   });
-  $('miImport').addEventListener('click', function () {
-    closeSheet();
-    fileInput.click();
-  });
+  $('miImport').addEventListener('click', function () { closeSheet(); fileInput.click(); });
   $('miHelp').addEventListener('click', function () {
     closeSheet();
     setTimeout(function () {
@@ -2354,8 +1596,7 @@ input[type="range"].slider::-moz-range-thumb {
 
   fileInput.addEventListener('change', function (e) {
     var f = e.target.files && e.target.files[0];
-    readFile(f);
-    e.target.value = '';
+    readFile(f); e.target.value = '';
   });
 
   ['dragover', 'drop'].forEach(function (ev) {
@@ -2367,16 +1608,10 @@ input[type="range"].slider::-moz-range-thumb {
   });
 
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'hidden') {
-      persistLocal();
-      pushContent();
-    }
+    if (document.visibilityState === 'hidden') { persistLocal(); pushContent(); }
   });
   window.addEventListener('beforeunload', persistLocal);
 
-  /* ============================================================
-     初始化
-     ============================================================ */
   (function init() {
     initSelf();
     loadTypo();
